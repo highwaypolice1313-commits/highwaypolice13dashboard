@@ -207,6 +207,7 @@
     <div class="nav-item active" data-page="overview"><span class="nav-icon">🏠</span>ภาพรวม</div>
     <div class="nav-item" data-page="crime"><span class="nav-icon">🚓</span>คดีอาญา + รถหนัก</div>
     <div class="nav-item" data-page="traffic"><span class="nav-icon">🚦</span>จราจร + อำนวยความสะดวก</div>
+    <div class="nav-item" data-page="monthly"><span class="nav-icon">📅</span>สรุปผลรายเดือน</div>
     <div class="nav-item" data-page="video"><span class="nav-icon">🎥</span>หลักฐานวิดีโอ</div>
   </aside>
 
@@ -352,6 +353,81 @@
       </div>
     </section>
 
+    <!-- ============ PAGE: MONTHLY SUMMARY ============ -->
+    <section class="page" id="page-monthly">
+      <div class="hero" style="padding:26px 30px;">
+        <h1 style="font-size:1.4rem;">📅 สรุปผลการปฏิบัติรายเดือน</h1>
+        <p id="monthlyCoverSub">—</p>
+      </div>
+
+      <div class="toolbar">
+        <select id="monthlyYearSel"></select>
+        <div class="seg" id="monthlyMonthTabs"></div>
+        <div class="seg" id="monthlyTypeSeg">
+          <button class="on" data-type="">📋 ทั้งหมด</button>
+          <button data-type="จับเอง">✅ จับเอง</button>
+          <button data-type="จับร่วม">🤝 จับร่วม</button>
+        </div>
+      </div>
+
+      <div class="seg" id="monthlySubSeg" style="margin-bottom:18px;">
+        <button class="on" data-sub="overview">📊 ภาพรวม</button>
+        <button data-sub="top">🏆 TOP ผู้ปฏิบัติ</button>
+        <button data-sub="unit">🏢 หน่วยงาน</button>
+        <button data-sub="category">📋 หมวดหมู่</button>
+        <button data-sub="compare">📅 เปรียบเทียบรายเดือน</button>
+      </div>
+
+      <!-- sub: overview -->
+      <div id="monthlySubOverview">
+        <div class="kpi-grid" id="monthlyCoverKpi"></div>
+        <div class="card chart-card">
+          <div class="section-title">📋 แยกตามประเภทการจับกุม (คดีอาญา)</div>
+          <div id="monthlyCatBreakdown" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+
+      <!-- sub: top performers (score-based, ตาม ScoreConfig) -->
+      <div id="monthlySubTop" style="display:none;">
+        <div class="card chart-card">
+          <div class="section-title">🏆 อันดับผู้ปฏิบัติงานดีเด่น (คำนวณจากคะแนน ScoreConfig)</div>
+          <div class="list-grid" id="monthlyTopGrid"></div>
+        </div>
+      </div>
+
+      <!-- sub: unit ranking (score-based) -->
+      <div id="monthlySubUnit" style="display:none;">
+        <div class="card chart-card">
+          <div class="section-title">🏢 อันดับหน่วยงาน (คำนวณจากคะแนน ScoreConfig)</div>
+          <div class="list-grid" id="monthlyUnitGrid"></div>
+        </div>
+      </div>
+
+      <!-- sub: category -->
+      <div id="monthlySubCategory" style="display:none;">
+        <div class="card chart-card">
+          <div class="section-title">📋 สถิติตามหมวดหมู่ (คดีอาญา)</div>
+          <div class="list-grid" id="monthlyCategoryGrid"></div>
+        </div>
+      </div>
+
+      <!-- sub: month compare -->
+      <div id="monthlySubCompare" style="display:none;">
+        <div class="card chart-card" style="margin-bottom:18px;">
+          <div class="section-title">📈 เปรียบเทียบคดีอาญารายเดือน</div>
+          <div class="chart-wrap"><canvas id="chartMonthlyCompare"></canvas></div>
+        </div>
+        <div class="card" style="padding:8px;">
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>เดือน</th><th>คดีอาญา</th><th>ผู้ต้องหา</th><th>ยาเสพติด</th><th>ปืน</th><th>รถหนัก</th><th>จับเอง</th><th>จับร่วม</th><th>จราจร+อำนวยฯ</th></tr></thead>
+              <tbody id="monthlyCompareBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ PAGE: VIDEO EVIDENCE ============ -->
     <section class="page" id="page-video">
       <div class="section-title" style="font-size:1.3rem;">🎥 หลักฐานวิดีโอรถวิ่งขวา</div>
@@ -362,20 +438,33 @@
       </div>
 
       <div class="kpi-grid">
+        <div class="card kpi"><div class="lbl">📅 วันนี้</div><div class="val" id="vd_today">-</div><div class="sub" id="vd_today_badge"></div></div>
+        <div class="card kpi"><div class="lbl">👮 เจ้าหน้าที่ปฏิบัติงานวันนี้</div><div class="val" id="vd_officers_today">-</div></div>
         <div class="card kpi"><div class="lbl">📝 รายงานทั้งหมด</div><div class="val" id="vd_total">-</div></div>
-        <div class="card kpi"><div class="lbl">👮 ผู้รายงาน</div><div class="val" id="vd_reporters">-</div></div>
+        <div class="card kpi"><div class="lbl">📊 เฉลี่ยต่อวัน</div><div class="val" id="vd_avg">-</div></div>
         <div class="card kpi"><div class="lbl">🏢 หน่วยที่รายงาน</div><div class="val" id="vd_units">-</div></div>
         <div class="card kpi"><div class="lbl">📅 วันที่มีรายงาน</div><div class="val" id="vd_days">-</div></div>
       </div>
 
       <div class="grid2">
         <div class="card chart-card">
-          <div class="section-title">🏢 รายงานแยกตามหน่วย</div>
-          <div class="chart-wrap"><canvas id="chartVideoUnit"></canvas></div>
+          <div class="section-title">📊 ยอดรายงานรายชั่วโมง (วันนี้)</div>
+          <div class="chart-wrap"><canvas id="chartVideoHourly"></canvas></div>
         </div>
+        <div class="card chart-card">
+          <div class="section-title">📈 แนวโน้มย้อนหลัง 14 วัน</div>
+          <div class="chart-wrap"><canvas id="chartVideoTrend"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid2">
         <div class="card chart-card">
           <div class="section-title">🗺️ จังหวัดที่พบบ่อยที่สุด TOP 8</div>
           <div class="chart-wrap"><canvas id="chartVideoProvince"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="section-title">🏢 สถิติแยกตามหน่วยรายงาน</div>
+          <div id="videoUnitStatsList" style="display:flex;flex-direction:column;gap:12px;"></div>
         </div>
       </div>
 
@@ -392,7 +481,8 @@
     <button class="bn-item active" data-page="overview"><span class="ic">🏠</span>ภาพรวม</button>
     <button class="bn-item" data-page="crime"><span class="ic">🚓</span>คดีอาญา</button>
     <button class="bn-item" data-page="traffic"><span class="ic">🚦</span>จราจร</button>
-    <button class="bn-item" data-page="video"><span class="ic">🎥</span>หลักฐานวิดีโอ</button>
+    <button class="bn-item" data-page="monthly"><span class="ic">📅</span>รายเดือน</button>
+    <button class="bn-item" data-page="video"><span class="ic">🎥</span>วิดีโอ</button>
   </div>
 </nav>
 
@@ -446,6 +536,20 @@ function parseThaiDate(v) {
   const s = String(v).trim();
   const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(s);
   if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+// เหมือน parseThaiDate แต่คงเวลา (ชม./นาที) ไว้ด้วย ใช้สำหรับกราฟรายชั่วโมง
+function parseFullDateTime(v) {
+  if (v === null || v === undefined || v === "") return null;
+  if (typeof v === "string" && v.startsWith("Date(")) {
+    const n = v.match(/-?\d+/g).map(Number);
+    return new Date(n[0], n[1], n[2], n[3] || 0, n[4] || 0, n[5] || 0);
+  }
+  const s = String(v).trim();
+  const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T]?(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(s);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5], +(m[6] || 0));
   const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
@@ -516,10 +620,12 @@ async function loadVideoData() {
     const r = rows[i];
     if (!r || !r[0]) continue;
     const ts = parseThaiDate(r[0]) || new Date();
+    const fullDt = parseFullDateTime(r[0]) || ts;
     out.push({
       timestamp: r[0],
       date: ts,
       dateKey: isoDate(ts),
+      hour: fullDt.getHours(),
       lineName: r[3] || "-",
       plateChar: r[4] || "",
       plateNumber: r[5] || "",
@@ -615,9 +721,11 @@ async function boot() {
     document.getElementById("lastUpdate").textContent =
       "อัปเดตล่าสุด: " + new Date().toLocaleString("th-TH");
     populateFilters();
+    populateMonthlyFilters();
     renderOverview();
     renderCrimePage();
     renderTrafficPage();
+    renderMonthlySummary();
     renderVideoPage();
   } catch (err) {
     console.error(err);
@@ -943,6 +1051,185 @@ function renderTrafficRadioView(data) {
 }
 
 /* ============================================================
+   MONTHLY SUMMARY PAGE — cover KPI / TOP (score) / unit (score) /
+   category / month-over-month comparison
+============================================================ */
+let monthlySelYear = null, monthlySelMonth = null, monthlySelType = "", monthlySub = "overview";
+let chartMonthlyCompare;
+
+function populateMonthlyFilters() {
+  const all = CRIME_DATA.concat(TRAFFIC_DATA);
+  const years = [...new Set(all.map(d=>d.monthKey.slice(0,4)))].sort().reverse();
+  const yearSel = document.getElementById("monthlyYearSel");
+  yearSel.innerHTML = years.map(y=>`<option value="${y}">${+y+543}</option>`).join("");
+  monthlySelYear = years[0] || String(new Date().getFullYear());
+  buildMonthlyMonthTabs();
+  yearSel.value = monthlySelYear;
+  yearSel.addEventListener("change", ()=>{ monthlySelYear = yearSel.value; buildMonthlyMonthTabs(); renderMonthlySummary(); });
+}
+function buildMonthlyMonthTabs() {
+  const all = CRIME_DATA.concat(TRAFFIC_DATA);
+  const months = [...new Set(all.filter(d=>d.monthKey.startsWith(monthlySelYear)).map(d=>d.monthKey.slice(5,7)))].sort();
+  monthlySelMonth = months[months.length-1] || "01";
+  document.getElementById("monthlyMonthTabs").innerHTML = months.map(m=>
+    `<button class="${m===monthlySelMonth?'on':''}" data-m="${m}">${THM[+m-1]}</button>`
+  ).join("");
+  document.querySelectorAll("#monthlyMonthTabs button").forEach(b=>
+    b.addEventListener("click", ()=>{
+      monthlySelMonth = b.dataset.m;
+      document.querySelectorAll("#monthlyMonthTabs button").forEach(x=>x.classList.toggle("on", x===b));
+      renderMonthlySummary();
+    })
+  );
+}
+document.getElementById("monthlyTypeSeg").addEventListener("click", e=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  monthlySelType = btn.dataset.type;
+  document.querySelectorAll("#monthlyTypeSeg button").forEach(b=>b.classList.toggle("on", b===btn));
+  renderMonthlySummary();
+});
+document.getElementById("monthlySubSeg").addEventListener("click", e=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  monthlySub = btn.dataset.sub;
+  document.querySelectorAll("#monthlySubSeg button").forEach(b=>b.classList.toggle("on", b===btn));
+  ["overview","top","unit","category","compare"].forEach(s=>
+    document.getElementById("monthlySub"+s[0].toUpperCase()+s.slice(1)).style.display = (s===monthlySub) ? "" : "none"
+  );
+  renderMonthlySummary();
+});
+
+function getMonthlyKey() { return monthlySelYear + "-" + monthlySelMonth; }
+function getMonthlyCrime() {
+  const key = getMonthlyKey();
+  return CRIME_DATA.filter(d => d.monthKey===key && (!monthlySelType || d.type===monthlySelType));
+}
+function getMonthlyTraffic() {
+  const key = getMonthlyKey();
+  return TRAFFIC_DATA.filter(d => d.monthKey===key && (!monthlySelType || d.type===monthlySelType));
+}
+
+function renderMonthlySummary() {
+  if (!monthlySelYear) return;
+  const crime = getMonthlyCrime();
+  const traffic = getMonthlyTraffic();
+  const mn = THM[+monthlySelMonth - 1], yr = +monthlySelYear + 543;
+  document.getElementById("monthlyCoverSub").textContent = `${mn} ${yr} — ส.ทล.3 กก.1 บก.ทล.` + (monthlySelType ? ` · ${monthlySelType}` : "");
+
+  const a = crime.reduce((s,d)=>({cases:s.cases+d.cases,people:s.people+d.people,drugs:s.drugs+d.drugs,guns:s.guns+d.guns,trucks:s.trucks+d.trucks,
+    solo:s.solo+(d.type==="จับเอง"?d.cases:0), joint:s.joint+(d.type==="จับร่วม"?d.cases:0)}),
+    {cases:0,people:0,drugs:0,guns:0,trucks:0,solo:0,joint:0});
+
+  if (monthlySub === "overview") {
+    document.getElementById("monthlyCoverKpi").innerHTML = [
+      ["📁 คดีอาญา", a.cases],["👥 ผู้ต้องหา", a.people],["💊 ยาเสพติด", a.drugs],
+      ["🔫 อาวุธปืน", a.guns],["🚛 รถหนัก", a.trucks],["🚦 จราจร+อำนวยฯ", traffic.length]
+    ].map(([l,v])=>`<div class="card kpi"><div class="lbl">${l}</div><div class="val">${fmt(v)}</div></div>`).join("");
+
+    const catSt = {};
+    crime.forEach(d=>{
+      const c = d.category||"ไม่ระบุ";
+      if(!catSt[c]) catSt[c]={cases:0,solo:0,joint:0};
+      catSt[c].cases+=d.cases; if(d.type==="จับเอง") catSt[c].solo+=d.cases; else catSt[c].joint+=d.cases;
+    });
+    const catSorted = Object.entries(catSt).sort((x,y)=>y[1].cases-x[1].cases);
+    const maxC = catSorted.length ? catSorted[0][1].cases : 1;
+    document.getElementById("monthlyCatBreakdown").innerHTML = catSorted.length ? catSorted.map(([c,s])=>{
+      const barPct = Math.round(s.cases/maxC*100), pct = a.cases ? (s.cases/a.cases*100).toFixed(1) : 0;
+      return `<div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+          <span style="font-weight:700;font-size:.88rem;">${esc(c)}</span>
+          <span style="font-size:.78rem;color:var(--ink-faint);">${s.cases} คดี (${pct}%) · ✅${s.solo} 🤝${s.joint}</span>
+        </div>
+        <div style="height:8px;border-radius:20px;background:rgba(118,118,128,.14);overflow:hidden;">
+          <div style="height:100%;width:${barPct}%;background:linear-gradient(90deg,var(--blue),var(--indigo));border-radius:20px;"></div>
+        </div>
+      </div>`;
+    }).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  }
+
+  else if (monthlySub === "top") {
+    const st = {};
+    crime.forEach(d=>{
+      const sc = calcScore(d);
+      d.officers.split(",").forEach(o=>{ o=o.trim(); if(!o) return;
+        if(!st[o]) st[o]={cases:0,people:0,score:0,solo:0,joint:0};
+        st[o].cases+=d.cases; st[o].people+=d.people; st[o].score+=sc;
+        if(d.type==="จับเอง") st[o].solo+=d.cases; else st[o].joint+=d.cases;
+      });
+    });
+    const sorted = Object.entries(st).sort((x,y)=>y[1].score-x[1].score);
+    document.getElementById("monthlyTopGrid").innerHTML = sorted.length ? sorted.map(([n,s],i)=>`
+      <div class="card item-card" onclick="openMonthlyOfficerModal('${esc(n)}')">
+        <div class="item-rank">#${i+1}</div>
+        <div class="item-name">${esc(n)}</div>
+        <div class="item-stats"><span class="pill" style="background:rgba(175,82,222,.14);color:#8E44C4;">⭐ ${s.score.toFixed(1)} คะแนน</span><span class="pill">📁 ${s.cases} คดี</span></div>
+        <div style="font-size:.72rem;color:var(--ink-faint);margin-top:8px;">✅ จับเอง ${s.solo} · 🤝 จับร่วม ${s.joint}</div>
+      </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  }
+
+  else if (monthlySub === "unit") {
+    const st = {};
+    crime.forEach(d=>{
+      const sc = calcScore(d);
+      d.unit.split(",").forEach(u=>{ u=u.trim(); if(!u) return;
+        if(!st[u]) st[u]={cases:0,score:0,solo:0,joint:0};
+        st[u].cases+=d.cases; st[u].score+=sc;
+        if(d.type==="จับเอง") st[u].solo+=d.cases; else st[u].joint+=d.cases;
+      });
+    });
+    const sorted = Object.entries(st).sort((x,y)=>y[1].score-x[1].score);
+    document.getElementById("monthlyUnitGrid").innerHTML = sorted.length ? sorted.map(([n,s],i)=>`
+      <div class="card item-card" onclick="openMonthlyUnitModal('${esc(n)}')">
+        <div class="item-rank">#${i+1}</div>
+        <div class="item-name">🏢 ${esc(n)}</div>
+        <div class="item-stats"><span class="pill" style="background:rgba(175,82,222,.14);color:#8E44C4;">⭐ ${s.score.toFixed(1)} คะแนน</span><span class="pill">📁 ${s.cases} คดี</span></div>
+        <div style="font-size:.72rem;color:var(--ink-faint);margin-top:8px;">✅ จับเอง ${s.solo} · 🤝 จับร่วม ${s.joint}</div>
+      </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  }
+
+  else if (monthlySub === "category") {
+    const st = {};
+    crime.forEach(d=> st[d.category] = (st[d.category]||0) + d.cases);
+    const sorted = Object.entries(st).sort((x,y)=>y[1]-x[1]);
+    document.getElementById("monthlyCategoryGrid").innerHTML = sorted.length ? sorted.map(([c,v])=>`
+      <div class="card item-card">
+        <div class="item-name">${esc(c)}</div>
+        <div class="item-stats"><span class="pill">📁 ${fmt(v)} คดี</span></div>
+      </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  }
+
+  else if (monthlySub === "compare") {
+    const st = {};
+    CRIME_DATA.forEach(d=>{
+      if(!st[d.monthKey]) st[d.monthKey]={cases:0,people:0,drugs:0,guns:0,trucks:0,solo:0,joint:0,traffic:0};
+      const s = st[d.monthKey];
+      s.cases+=d.cases; s.people+=d.people; s.drugs+=d.drugs; s.guns+=d.guns; s.trucks+=d.trucks;
+      if(d.type==="จับเอง") s.solo+=d.cases; else s.joint+=d.cases;
+    });
+    TRAFFIC_DATA.forEach(d=>{
+      if(!st[d.monthKey]) st[d.monthKey]={cases:0,people:0,drugs:0,guns:0,trucks:0,solo:0,joint:0,traffic:0};
+      st[d.monthKey].traffic++;
+    });
+    const months = Object.keys(st).sort();
+    if (chartMonthlyCompare) chartMonthlyCompare.destroy();
+    chartMonthlyCompare = new Chart(document.getElementById("chartMonthlyCompare"), {
+      type:"bar",
+      data:{ labels: months.map(monthLabel), datasets:[
+        { label:"📁 คดีอาญา", data: months.map(m=>st[m].cases), backgroundColor:"rgba(10,132,255,.75)", borderRadius:5 },
+        { label:"🚦 จราจร+อำนวยฯ", data: months.map(m=>st[m].traffic), backgroundColor:"rgba(255,159,10,.75)", borderRadius:5 }
+      ]},
+      options:{ maintainAspectRatio:false, plugins:{legend:{position:"bottom",labels:{font:{size:10}}}},
+        scales:{ x:{grid:{display:false}}, y:{beginAtZero:true,ticks:{precision:0}} } }
+    });
+    document.getElementById("monthlyCompareBody").innerHTML = months.length ? months.slice().reverse().map(m=>{
+      const s = st[m];
+      return `<tr><td><b>${monthLabel(m)}</b></td><td>${fmt(s.cases)}</td><td>${fmt(s.people)}</td><td>${fmt(s.drugs)}</td>
+        <td>${fmt(s.guns)}</td><td>${fmt(s.trucks)}</td><td>${fmt(s.solo)}</td><td>${fmt(s.joint)}</td><td>${fmt(s.traffic)}</td></tr>`;
+    }).join("") : `<tr><td colspan="9" class="no-data">ไม่พบข้อมูล</td></tr>`;
+  }
+}
+
+/* ============================================================
    MODALS — officer / unit / radio drill-down (crime + traffic)
 ============================================================ */
 function openOfficerModal(name) {
@@ -955,6 +1242,22 @@ function openOfficerModal(name) {
 }
 function openUnitModal(name) {
   const data = getFilteredCrime().filter(d => d.unit.split(",").map(s=>s.trim()).includes(name));
+  const cases = data.reduce((s,d)=>s+d.cases,0), people = data.reduce((s,d)=>s+d.people,0);
+  document.getElementById("modalName").textContent = "🏢 " + name;
+  document.getElementById("modalSub").textContent = `📁 ${cases} คดี · 👥 ${people} คน · ${data.length} รายการ`;
+  renderModalRecords(data);
+  document.getElementById("modalBg").classList.add("open");
+}
+function openMonthlyOfficerModal(name) {
+  const data = getMonthlyCrime().filter(d => d.officers.split(",").map(s=>s.trim()).includes(name));
+  const cases = data.reduce((s,d)=>s+d.cases,0), people = data.reduce((s,d)=>s+d.people,0);
+  document.getElementById("modalName").textContent = name;
+  document.getElementById("modalSub").textContent = `📁 ${cases} คดี · 👥 ${people} คน · ${data.length} รายการ`;
+  renderModalRecords(data);
+  document.getElementById("modalBg").classList.add("open");
+}
+function openMonthlyUnitModal(name) {
+  const data = getMonthlyCrime().filter(d => d.unit.split(",").map(s=>s.trim()).includes(name));
   const cases = data.reduce((s,d)=>s+d.cases,0), people = data.reduce((s,d)=>s+d.people,0);
   document.getElementById("modalName").textContent = "🏢 " + name;
   document.getElementById("modalSub").textContent = `📁 ${cases} คดี · 👥 ${people} คน · ${data.length} รายการ`;
@@ -999,7 +1302,7 @@ document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id
 /* ============================================================
    VIDEO EVIDENCE PAGE
 ============================================================ */
-let chartVideoUnit, chartVideoProvince;
+let chartVideoProvince, chartVideoHourly, chartVideoTrend;
 document.getElementById("videoUnitFilter").addEventListener("change", renderVideoPage);
 document.getElementById("videoSearch").addEventListener("input", renderVideoPage);
 
@@ -1013,21 +1316,53 @@ function renderVideoPage() {
     return hay.includes(q);
   });
 
-  document.getElementById("vd_total").textContent = fmt(data.length);
-  document.getElementById("vd_reporters").textContent = fmt(new Set(data.map(d=>d.lineName)).size);
-  document.getElementById("vd_units").textContent = fmt(new Set(data.map(d=>d.unit)).size);
-  document.getElementById("vd_days").textContent = fmt(new Set(data.map(d=>d.dateKey)).size);
+  const todayKey = isoDate(new Date());
+  const yesterdayKey = isoDate(new Date(Date.now() - 86400000));
+  const todayData = data.filter(d=>d.dateKey===todayKey);
+  const yesterdayCount = data.filter(d=>d.dateKey===yesterdayKey).length;
+  const totalDays = new Set(data.map(d=>d.dateKey)).size;
 
-  const unitCount = {};
-  data.forEach(d=> unitCount[d.unit]=(unitCount[d.unit]||0)+1);
-  const uEntries = Object.entries(unitCount).sort((a,b)=>b[1]-a[1]);
-  if (chartVideoUnit) chartVideoUnit.destroy();
-  chartVideoUnit = new Chart(document.getElementById("chartVideoUnit"), {
+  document.getElementById("vd_today").textContent = fmt(todayData.length);
+  const badgeEl = document.getElementById("vd_today_badge");
+  if (yesterdayCount === 0 && todayData.length === 0) { badgeEl.textContent = "— เทียบเมื่อวาน"; }
+  else {
+    const diff = todayData.length - yesterdayCount;
+    const pct = yesterdayCount > 0 ? Math.round((diff / yesterdayCount) * 100) : 100;
+    badgeEl.textContent = (diff > 0 ? "▲ +" : diff < 0 ? "▼ " : "– ") + pct + "% เทียบเมื่อวาน";
+    badgeEl.style.color = diff > 0 ? "#1F8B3D" : diff < 0 ? "#D70015" : "var(--ink-faint)";
+  }
+  document.getElementById("vd_officers_today").textContent = fmt(new Set(todayData.map(d=>d.lineName)).size);
+  document.getElementById("vd_total").textContent = fmt(data.length);
+  document.getElementById("vd_avg").textContent = totalDays ? (data.length / totalDays).toFixed(1) : "0";
+  document.getElementById("vd_units").textContent = fmt(new Set(data.map(d=>d.unit)).size);
+  document.getElementById("vd_days").textContent = fmt(totalDays);
+
+  // ── ยอดรายชั่วโมงวันนี้ ──
+  const hourly = new Array(24).fill(0);
+  todayData.forEach(d=> hourly[d.hour]++);
+  if (chartVideoHourly) chartVideoHourly.destroy();
+  chartVideoHourly = new Chart(document.getElementById("chartVideoHourly"), {
     type:"bar",
-    data:{ labels:uEntries.map(e=>e[0]), datasets:[{ label:"รายงาน", data:uEntries.map(e=>e[1]), backgroundColor:"#30D158", borderRadius:6 }]},
-    options:{ maintainAspectRatio:false, indexAxis:"y", plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,ticks:{precision:0}}} }
+    data:{ labels: hourly.map((_,h)=>h+":00"), datasets:[{ label:"รายงาน", data:hourly, backgroundColor:"#30D158", borderRadius:5, maxBarThickness:18 }]},
+    options:{ maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
   });
 
+  // ── แนวโน้ม 14 วันล่าสุด ──
+  const byDay = {};
+  data.forEach(d=> byDay[d.dateKey]=(byDay[d.dateKey]||0)+1);
+  const days = [];
+  for (let i=13;i>=0;i--){ const d=new Date(Date.now()-i*86400000); days.push(isoDate(d)); }
+  if (chartVideoTrend) chartVideoTrend.destroy();
+  chartVideoTrend = new Chart(document.getElementById("chartVideoTrend"), {
+    type:"line",
+    data:{ labels: days.map(d=>d.slice(5)), datasets:[{ label:"รายงาน", data: days.map(d=>byDay[d]||0),
+      borderColor:"#0A84FF", backgroundColor:"rgba(10,132,255,.10)", fill:true, tension:.35, pointRadius:3, borderWidth:2.5 }]},
+    options:{ maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
+  });
+
+  // ── จังหวัดที่พบบ่อย ──
   const provCount = {};
   data.forEach(d=> provCount[d.plateProvince]=(provCount[d.plateProvince]||0)+1);
   const pEntries = Object.entries(provCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -1038,6 +1373,25 @@ function renderVideoPage() {
       backgroundColor:["#0A84FF","#30D158","#5E5CE6","#FF9F0A","#FF3B30","#40C8E0","#AF52DE","#8E8E93"] }]},
     options:{ maintainAspectRatio:false, cutout:"60%", plugins:{legend:{position:"bottom",labels:{font:{size:10},boxWidth:10}}} }
   });
+
+  // ── สถิติแยกตามหน่วย (แบบแถบความคืบหน้า) ──
+  const unitCount = {};
+  data.forEach(d=> unitCount[d.unit]=(unitCount[d.unit]||0)+1);
+  const uEntries = Object.entries(unitCount).sort((a,b)=>b[1]-a[1]);
+  const uMax = uEntries.length ? uEntries[0][1] : 1;
+  const uTotal = data.length || 1;
+  document.getElementById("videoUnitStatsList").innerHTML = uEntries.length ? uEntries.map(([u,c],i)=>{
+    const pct = Math.round(c/uMax*100), share = ((c/uTotal)*100).toFixed(1);
+    return `<div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
+        <span style="font-weight:700;font-size:.88rem;">${i+1}. ${esc(u)}</span>
+        <span style="font-size:.78rem;color:var(--ink-faint);">${c} รายการ (${share}%)</span>
+      </div>
+      <div style="height:9px;border-radius:20px;background:rgba(118,118,128,.14);overflow:hidden;">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--green),var(--green-deep));border-radius:20px;"></div>
+      </div>
+    </div>`;
+  }).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 
   const sorted = data.slice().sort((a,b)=> b.dateKey.localeCompare(a.dateKey)).slice(0,60);
   document.getElementById("videoList").innerHTML = sorted.length ? sorted.map(d=>`
