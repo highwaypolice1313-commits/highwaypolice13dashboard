@@ -23,10 +23,6 @@
   const VIDEO_TAB_NAME   = "Sheet1";
 </script>
 <style>
-  /* ==================================================================
-     Liquid Glass (iOS-inspired) design system — same family as the
-     highway-police LIFF apps this dashboard sits alongside.
-     ================================================================== */
   :root{
     --bg:#EFEFF4; --blob-a:#E8F6EE; --blob-b:#EAF3FC;
     --glass:rgba(255,255,255,.68); --glass-strong:rgba(255,255,255,.86);
@@ -63,7 +59,6 @@
 
   .app{max-width:1500px;margin:0 auto;display:flex;min-height:100vh;}
 
-  /* ---- sidebar (desktop) ---- */
   .sidebar{width:256px;flex-shrink:0;padding:26px 16px;position:sticky;top:0;height:100vh;overflow-y:auto;}
   .brand{padding:6px 10px 22px;}
   .brand .t1{font-weight:800;font-size:1.05rem;color:var(--green-ink);}
@@ -76,7 +71,6 @@
   .nav-item.active{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;box-shadow:0 8px 20px -8px rgba(31,139,61,.55);}
   .nav-icon{font-size:1.25rem;width:26px;text-align:center;}
 
-  /* ---- mobile top bar + bottom nav ---- */
   .mobile-topbar{display:none;position:sticky;top:0;z-index:50;padding:14px 16px;
     background:rgba(239,239,244,.75);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
     border-bottom:1px solid var(--card-border);}
@@ -145,7 +139,6 @@
   .bar2 .s{background:var(--green);height:100%;}
   .bar2 .j{background:var(--orange);height:100%;}
 
-  /* ── Podium (TOP 3) — monthly summary ── */
   .podium{display:flex;gap:14px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
   .p-card{border-radius:22px;padding:22px 18px;text-align:center;flex:1;min-width:150px;max-width:210px;
     position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:pointer;
@@ -170,7 +163,6 @@
     .p-name{min-height:0;margin-bottom:2px;}
   }
 
-  /* ── Toggle panel (hide/show officers) ── */
   .toggle-panel{margin-top:18px;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,.5);border:1px solid var(--card-border);}
   .toggle-panel-title{font-size:.76rem;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;
     margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
@@ -193,7 +185,6 @@
 
   .no-data{text-align:center;padding:50px 20px;color:var(--ink-faint);}
 
-  /* video evidence cards */
   .ev-card{padding:16px;}
   .ev-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
   .ev-plate{font-weight:800;color:var(--green-deep);font-size:1rem;}
@@ -201,7 +192,6 @@
   .ev-meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:4px;}
   .ev-link{font-size:.78rem;font-weight:700;color:var(--blue);text-decoration:none;}
 
-  /* modal */
   .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(20,20,22,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
     display:none;align-items:center;justify-content:center;padding:18px;}
   .modal-bg.open{display:flex;}
@@ -252,7 +242,6 @@
   </aside>
 
   <main>
-    <!-- ============ PAGE: OVERVIEW ============ -->
     <section class="page active" id="page-overview">
       <div class="hero">
         <h1>📊 ศูนย์รวมผลการปฏิบัติ ส.ทล.3 กก.1 บก.ทล.</h1>
@@ -285,7 +274,6 @@
       </div>
     </section>
 
-    <!-- ============ PAGE: CRIME ============ -->
     <section class="page" id="page-crime">
       <div class="section-title" style="font-size:1.3rem;">🚓 คดีอาญา + รถหนัก</div>
 
@@ -335,7 +323,6 @@
       </div>
     </section>
 
-    <!-- ============ PAGE: TRAFFIC ============ -->
     <section class="page" id="page-traffic">
       <div class="section-title" style="font-size:1.3rem;">🚦 จราจร + อำนวยความสะดวก</div>
 
@@ -393,7 +380,6 @@
       </div>
     </section>
 
-    <!-- ============ PAGE: MONTHLY SUMMARY ============ -->
     <section class="page" id="page-monthly">
       <div class="hero" style="padding:26px 30px;">
         <h1 style="font-size:1.4rem;">📅 สรุปผลการปฏิบัติรายเดือน</h1>
@@ -418,7 +404,6 @@
         <button data-sub="compare">📅 เปรียบเทียบรายเดือน</button>
       </div>
 
-      <!-- sub: overview -->
       <div id="monthlySubOverview">
         <div class="kpi-grid" id="monthlyCoverKpi"></div>
         <div class="card chart-card">
@@ -427,7 +412,6 @@
         </div>
       </div>
 
-      <!-- sub: top performers (score-based, ตาม ScoreConfig) -->
       <div id="monthlySubTop" style="display:none;">
         <div class="card chart-card">
           <div class="section-title">🏆 อันดับผู้ปฏิบัติงานดีเด่น (คำนวณจากคะแนน ScoreConfig)</div>
@@ -446,7 +430,6 @@
         </div>
       </div>
 
-      <!-- sub: unit ranking (score-based) -->
       <div id="monthlySubUnit" style="display:none;">
         <div class="card chart-card">
           <div class="section-title">🏢 อันดับหน่วยงาน (คำนวณจากคะแนน ScoreConfig)</div>
@@ -454,7 +437,6 @@
         </div>
       </div>
 
-      <!-- sub: category -->
       <div id="monthlySubCategory" style="display:none;">
         <div class="card chart-card">
           <div class="section-title">📋 สถิติตามหมวดหมู่ (คดีอาญา)</div>
@@ -462,7 +444,6 @@
         </div>
       </div>
 
-      <!-- sub: month compare -->
       <div id="monthlySubCompare" style="display:none;">
         <div class="card chart-card" style="margin-bottom:18px;">
           <div class="section-title">📈 เปรียบเทียบคดีอาญารายเดือน</div>
@@ -479,7 +460,6 @@
       </div>
     </section>
 
-    <!-- ============ PAGE: VIDEO EVIDENCE ============ -->
     <section class="page" id="page-video">
       <div class="section-title" style="font-size:1.3rem;">🎥 หลักฐานวิดีโอรถวิ่งขวา</div>
 
@@ -537,7 +517,6 @@
   </div>
 </nav>
 
-<!-- generic detail modal -->
 <div class="modal-bg" id="modalBg">
   <div class="modal">
     <div class="modal-head">
@@ -552,11 +531,6 @@
 </div>
 
 <script>
-/* ============================================================
-   DATA LAYER — fetch a public Google Sheet tab via the gviz
-   endpoint (works for any sheet shared as "Anyone with the
-   link can view"). No Apps Script backend needed.
-============================================================ */
 async function fetchSheetRows(sheetId, sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -577,7 +551,6 @@ function toNum(v) {
   return isNaN(n) ? 0 : n;
 }
 
-// รับวันที่ทั้งแบบ "1/7/2026" (d/m/yyyy) และแบบ Date object ที่ gviz อาจส่งมาเป็น "Date(2026,6,1)"
 function parseThaiDate(v) {
   if (v === null || v === undefined || v === "") return null;
   if (typeof v === "string" && v.startsWith("Date(")) {
@@ -591,7 +564,6 @@ function parseThaiDate(v) {
   return isNaN(d.getTime()) ? null : d;
 }
 
-// เหมือน parseThaiDate แต่คงเวลา (ชม./นาที) ไว้ด้วย ใช้สำหรับกราฟรายชั่วโมง
 function parseFullDateTime(v) {
   if (v === null || v === undefined || v === "") return null;
   if (typeof v === "string" && v.startsWith("Date(")) {
@@ -619,12 +591,6 @@ function monthLabel(key) {
 function fmt(n) { return (n || 0).toLocaleString("th-TH"); }
 function esc(s) { return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
 
-/* ============================================================
-   LOAD + NORMALIZE CRIME DATA  (sheet "อาญา+รถหนัก")
-   columns: วัน|หมวดหมู่|คำอธิบาย|ประเภทการจับกุม|ประเภทหมาย|
-            หน่วยปฏิบัติ|ราย|คน|ของกลาง|จำนวนยาเสพติด|จำนวนปืน|
-            จำนวนรถหนัก|ผู้จับกุม|รวมจับเอง|รวมจับร่วม
-============================================================ */
 let CRIME_DATA = [];
 let TRAFFIC_DATA = [];
 let VIDEO_DATA = [];
@@ -632,12 +598,11 @@ let VIDEO_DATA = [];
 async function loadCrimeData() {
   const rows = await fetchSheetRows(CRIME_SHEET_ID, CRIME_TAB_NAME);
   const out = [];
-  // แถวแรกเป็น header เสมอ ข้ามไป แล้วกรองเฉพาะแถวที่คอลัมน์วันที่แปลงได้จริง
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r || !r[0]) continue;
     const date = parseThaiDate(r[0]);
-    if (!date) continue; // ข้ามแถวหัวตาราง/แถวว่าง/placeholder เช่น "d/m/yyyy"
+    if (!date) continue;
     out.push({
       date,
       dateKey: isoDate(date),
@@ -658,12 +623,6 @@ async function loadCrimeData() {
   return out;
 }
 
-/* ============================================================
-   LOAD + NORMALIZE VIDEO EVIDENCE DATA (sheet "Sheet1")
-   columns: Timestamp|วันที่บันทึก|LINE User ID|ชื่อผู้ส่ง|
-            หมวดอักษร|หมวดตัวเลข|หมวดจังหวัด|หน่วยรายงาน|
-            ลิงก์ไฟล์บน Drive|folderId|videos|ticketCopies|driverPhotos
-============================================================ */
 async function loadVideoData() {
   const rows = await fetchSheetRows(VIDEO_SHEET_ID, VIDEO_TAB_NAME);
   const out = [];
@@ -695,11 +654,6 @@ function safeJsonLen(v) {
   try { return JSON.parse(v).length; } catch (e) { return 0; }
 }
 
-/* ============================================================
-   LOAD + NORMALIZE TRAFFIC DATA
-   sheets: "จับจราจร" + "อำนวยความสะดวก+ขบวน" — identical columns:
-   วัน|หมวดหมู่|หน่วยปฏิบัติ|หมายเลขรถวิทยุ|ผู้ปฏิบัติ|ประเภทการจับกุม
-============================================================ */
 async function loadTrafficRows(tabName, sourceLabel) {
   const rows = await fetchSheetRows(CRIME_SHEET_ID, tabName);
   const out = [];
@@ -728,11 +682,6 @@ async function loadTrafficData() {
   return jarajorn.concat(amnuay);
 }
 
-/* ============================================================
-   LOAD SCORECONFIG  (columns: หมวดหมู่|ประเภทหมาย|จับเอง|จับร่วม)
-   ใช้คำนวณ "คะแนน" ของคดีอาญาแต่ละรายการ = อัตราตามหมวดหมู่/ประเภทหมาย/
-   ประเภทการจับ x จำนวนคน (ถ้าไม่พบหมวดที่ตรง ใช้แถว (default))
-============================================================ */
 let SCORE_CONFIG = [];
 async function loadScoreConfig() {
   try {
@@ -757,9 +706,6 @@ function calcScore(rec) {
   return rate * (rec.people || 0);
 }
 
-/* ============================================================
-   BOOT
-============================================================ */
 async function boot() {
   try {
     const [crime, traffic, video, scoreConfig] = await Promise.all([
@@ -786,9 +732,6 @@ async function boot() {
   }
 }
 
-/* ============================================================
-   NAVIGATION
-============================================================ */
 function goPage(id) {
   document.querySelectorAll(".page").forEach(p => p.classList.toggle("active", p.id === "page-" + id));
   document.querySelectorAll(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.page === id));
@@ -798,9 +741,6 @@ document.querySelectorAll(".nav-item,.bn-item").forEach(el =>
   el.addEventListener("click", () => goPage(el.dataset.page))
 );
 
-/* ============================================================
-   OVERVIEW
-============================================================ */
 let chartOvTrend, chartOvUnit;
 function renderOverview() {
   const cases = CRIME_DATA.reduce((s,d)=>s+d.cases,0);
@@ -816,7 +756,6 @@ function renderOverview() {
   document.getElementById("ov_officers").textContent = fmt(officers.size);
   document.getElementById("ov_video").textContent = fmt(VIDEO_DATA.length);
 
-  // trend: last 30 days with data
   const byDay = {};
   CRIME_DATA.forEach(d=>{ byDay[d.dateKey] = (byDay[d.dateKey]||0) + d.cases; });
   const days = Object.keys(byDay).sort().slice(-30);
@@ -831,7 +770,6 @@ function renderOverview() {
       scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
   });
 
-  // unit share doughnut
   const unitCount = {};
   CRIME_DATA.forEach(d=> d.unit.split(",").forEach(u=>{ u=u.trim(); if(u) unitCount[u]=(unitCount[u]||0)+d.cases; }));
   const entries = Object.entries(unitCount).sort((a,b)=>b[1]-a[1]);
@@ -843,7 +781,6 @@ function renderOverview() {
     options:{ maintainAspectRatio:false, cutout:"60%", plugins:{legend:{position:"bottom",labels:{font:{size:10},boxWidth:10}}} }
   });
 
-  // top 5 officers by cases
   const offStat = {};
   CRIME_DATA.forEach(d=> d.officers.split(",").forEach(o=>{ o=o.trim(); if(!o) return;
     if(!offStat[o]) offStat[o]={cases:0,people:0}; offStat[o].cases+=d.cases; offStat[o].people+=d.people; }));
@@ -856,9 +793,6 @@ function renderOverview() {
     </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 }
 
-/* ============================================================
-   CRIME PAGE — person / unit / month views
-============================================================ */
 let crimeView = "person";
 let chartMonth;
 
@@ -954,7 +888,6 @@ function renderUnitView(data) {
 }
 
 function renderMonthView(data) {
-  // month view ignores the month filter itself, but respects the type filter, so it can compare months
   const type = document.getElementById("crimeTypeFilter").value;
   const src = CRIME_DATA.filter(d => !type || d.type===type);
   const st = {};
@@ -984,9 +917,6 @@ function renderMonthView(data) {
   }).join("") : `<tr><td colspan="8" class="no-data">ไม่พบข้อมูล</td></tr>`;
 }
 
-/* ============================================================
-   TRAFFIC PAGE — person / unit / month / radio-car views
-============================================================ */
 let trafficView = "person";
 let chartTrafficMonth;
 
@@ -1059,7 +989,6 @@ function renderTrafficUnitView(data) {
 }
 
 function renderTrafficMonthView(dataIgnored) {
-  // มุมมองรายเดือนไม่ผูกกับตัวกรองเดือน (เพื่อให้เห็นภาพเปรียบเทียบ) แต่ยังกรองตามประเภทได้
   const source = document.getElementById("trafficSourceFilter").value;
   const src = TRAFFIC_DATA.filter(d => !source || d.source===source);
   const st = {};
@@ -1101,11 +1030,8 @@ function renderTrafficRadioView(data) {
     </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 }
 
-/* ============================================================
-   MONTHLY SUMMARY PAGE — cover KPI / TOP (score) / unit (score) /
-   category / month-over-month comparison
-============================================================ */
 let monthlySelYear = null, monthlySelMonth = null, monthlySelType = "", monthlySub = "overview";
+let monthlyExcludedOfficers = new Set();
 let chartMonthlyCompare;
 
 function populateMonthlyFilters() {
@@ -1159,6 +1085,16 @@ function getMonthlyTraffic() {
   return TRAFFIC_DATA.filter(d => d.monthKey===key && (!monthlySelType || d.type===monthlySelType));
 }
 
+function toggleMonthlyExcluded(name) {
+  if (monthlyExcludedOfficers.has(name)) monthlyExcludedOfficers.delete(name);
+  else monthlyExcludedOfficers.add(name);
+  renderMonthlySummary();
+}
+function resetMonthlyExcluded() {
+  monthlyExcludedOfficers.clear();
+  renderMonthlySummary();
+}
+
 function renderMonthlySummary() {
   if (!monthlySelYear) return;
   const crime = getMonthlyCrime();
@@ -1208,14 +1144,40 @@ function renderMonthlySummary() {
         if(d.type==="จับเอง") st[o].solo+=d.cases; else st[o].joint+=d.cases;
       });
     });
-    const sorted = Object.entries(st).sort((x,y)=>y[1].score-x[1].score);
-    document.getElementById("monthlyTopGrid").innerHTML = sorted.length ? sorted.map(([n,s],i)=>`
+    const allSorted = Object.entries(st).sort((x,y)=>y[1].score-x[1].score);
+    const activeSorted = allSorted.filter(([n])=>!monthlyExcludedOfficers.has(n));
+
+    const top3 = activeSorted.slice(0,3);
+    const medals = ["🥇","🥈","🥉"];
+    const order = ["r1","r2","r3"];
+    document.getElementById("monthlyPodium").innerHTML = top3.length ? top3.map(([n,s],i)=>`
+      <div class="p-card ${order[i]}" onclick="openMonthlyOfficerModal('${esc(n)}')">
+        <span class="p-medal">${medals[i]}</span>
+        <div class="p-name">${esc(n)}</div>
+        <span class="p-score">${s.score.toFixed(1)}</span>
+        <div class="p-score-lbl">คะแนน</div>
+        <div class="p-detail">📁 ${s.cases} คดี · ✅${s.solo} 🤝${s.joint}</div>
+      </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+
+    const rest = activeSorted.slice(3);
+    document.getElementById("monthlyTopRest").innerHTML = rest.length ? rest.map(([n,s],i)=>`
       <div class="card item-card" onclick="openMonthlyOfficerModal('${esc(n)}')">
-        <div class="item-rank">#${i+1}</div>
+        <div class="item-rank">#${i+4}</div>
         <div class="item-name">${esc(n)}</div>
         <div class="item-stats"><span class="pill" style="background:rgba(175,82,222,.14);color:#8E44C4;">⭐ ${s.score.toFixed(1)} คะแนน</span><span class="pill">📁 ${s.cases} คดี</span></div>
         <div style="font-size:.72rem;color:var(--ink-faint);margin-top:8px;">✅ จับเอง ${s.solo} · 🤝 จับร่วม ${s.joint}</div>
-      </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+      </div>`).join("") : "";
+
+    document.getElementById("monthlyToggleList").innerHTML = allSorted.length ? allSorted.map(([n])=>{
+      const isExcluded = monthlyExcludedOfficers.has(n);
+      return `<span class="tog-chip ${isExcluded?'excluded':''}">
+        <button class="name-btn" onclick="openMonthlyOfficerModal('${esc(n)}')">${esc(n)}</button>
+        <button class="hide-btn" onclick="toggleMonthlyExcluded('${esc(n)}')" title="${isExcluded?'แสดงในอันดับ':'ซ่อนจากอันดับ'}">${isExcluded?'↺':'✕'}</button>
+      </span>`;
+    }).join("") : "";
+
+    document.getElementById("monthlyExcludedCount").textContent =
+      monthlyExcludedOfficers.size ? `ซ่อนอยู่ ${monthlyExcludedOfficers.size} คน` : "";
   }
 
   else if (monthlySub === "unit") {
@@ -1280,9 +1242,6 @@ function renderMonthlySummary() {
   }
 }
 
-/* ============================================================
-   MODALS — officer / unit / radio drill-down (crime + traffic)
-============================================================ */
 function openOfficerModal(name) {
   const data = getFilteredCrime().filter(d => d.officers.split(",").map(s=>s.trim()).includes(name));
   const cases = data.reduce((s,d)=>s+d.cases,0), people = data.reduce((s,d)=>s+d.people,0);
@@ -1350,9 +1309,6 @@ function renderModalRecords(data) {
 function closeModal() { document.getElementById("modalBg").classList.remove("open"); }
 document.getElementById("modalBg").addEventListener("click", e=>{ if(e.target.id==="modalBg") closeModal(); });
 
-/* ============================================================
-   VIDEO EVIDENCE PAGE
-============================================================ */
 let chartVideoProvince, chartVideoHourly, chartVideoTrend;
 document.getElementById("videoUnitFilter").addEventListener("change", renderVideoPage);
 document.getElementById("videoSearch").addEventListener("input", renderVideoPage);
@@ -1388,7 +1344,6 @@ function renderVideoPage() {
   document.getElementById("vd_units").textContent = fmt(new Set(data.map(d=>d.unit)).size);
   document.getElementById("vd_days").textContent = fmt(totalDays);
 
-  // ── ยอดรายชั่วโมงวันนี้ ──
   const hourly = new Array(24).fill(0);
   todayData.forEach(d=> hourly[d.hour]++);
   if (chartVideoHourly) chartVideoHourly.destroy();
@@ -1399,7 +1354,6 @@ function renderVideoPage() {
       scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
   });
 
-  // ── แนวโน้ม 14 วันล่าสุด ──
   const byDay = {};
   data.forEach(d=> byDay[d.dateKey]=(byDay[d.dateKey]||0)+1);
   const days = [];
@@ -1413,7 +1367,6 @@ function renderVideoPage() {
       scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
   });
 
-  // ── จังหวัดที่พบบ่อย ──
   const provCount = {};
   data.forEach(d=> provCount[d.plateProvince]=(provCount[d.plateProvince]||0)+1);
   const pEntries = Object.entries(provCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
@@ -1425,7 +1378,6 @@ function renderVideoPage() {
     options:{ maintainAspectRatio:false, cutout:"60%", plugins:{legend:{position:"bottom",labels:{font:{size:10},boxWidth:10}}} }
   });
 
-  // ── สถิติแยกตามหน่วย (แบบแถบความคืบหน้า) ──
   const unitCount = {};
   data.forEach(d=> unitCount[d.unit]=(unitCount[d.unit]||0)+1);
   const uEntries = Object.entries(unitCount).sort((a,b)=>b[1]-a[1]);
