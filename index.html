@@ -36,9 +36,11 @@
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html{-webkit-text-size-adjust:100%;}
+  body,button,input,select,textarea{
+    font-family:"Prompt","IBM Plex Sans Thai",-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
+  }
   body{
     margin:0; min-height:100vh;
-    font-family:"Prompt","IBM Plex Sans Thai",-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif;
     background:
       radial-gradient(560px 420px at 8% -6%, var(--blob-a) 0%, transparent 60%),
       radial-gradient(620px 460px at 108% 8%, var(--blob-b) 0%, transparent 55%),
@@ -116,11 +118,11 @@
   @media(max-width:900px){.grid2{grid-template-columns:1fr;}}
 
   .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px;}
-  select,input[type=text],input[type=date]{border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:.86rem;background:rgba(118,118,128,.10);color:var(--ink);font-family:inherit;outline:none;}
+  select,input[type=text],input[type=date]{border:none;border-radius:var(--r-sm);padding:10px 14px;font-size:.86rem;background:rgba(118,118,128,.10);color:var(--ink);outline:none;}
   select:focus,input:focus{background:#fff;box-shadow:0 0 0 3.5px rgba(10,132,255,.22);}
 
   .seg{display:flex;border-radius:999px;overflow:hidden;background:rgba(118,118,128,.1);padding:3px;gap:2px;}
-  .seg button{border:none;background:none;padding:8px 16px;border-radius:999px;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .18s;}
+  .seg button{border:none;background:none;padding:8px 16px;border-radius:999px;font-size:.8rem;font-weight:700;color:var(--ink-soft);cursor:pointer;transition:all .18s;}
   .seg button.on{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;box-shadow:0 4px 12px -4px rgba(31,139,61,.5);}
 
   .chart-card{padding:20px;}
@@ -167,12 +169,12 @@
   .toggle-panel-title{font-size:.76rem;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.4px;
     margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
   .reset-btn{padding:5px 12px;border-radius:8px;border:1px solid rgba(255,59,48,.3);background:transparent;color:var(--red);
-    font-family:inherit;font-size:.74rem;font-weight:700;cursor:pointer;transition:background .15s;}
+    font-size:.74rem;font-weight:700;cursor:pointer;transition:background .15s;}
   .reset-btn:hover{background:rgba(255,59,48,.08);}
   .tog-list{display:flex;flex-wrap:wrap;gap:7px;}
   .tog-chip{display:inline-flex;align-items:center;border-radius:20px;overflow:hidden;border:1px solid rgba(10,132,255,.28);}
   .tog-chip.excluded{border-color:rgba(255,59,48,.28);}
-  .tog-chip .name-btn{padding:5px 11px;background:rgba(10,132,255,.08);border:none;color:var(--blue);font-family:inherit;font-size:.76rem;font-weight:600;cursor:pointer;}
+  .tog-chip .name-btn{padding:5px 11px;background:rgba(10,132,255,.08);border:none;color:var(--blue);font-size:.76rem;font-weight:600;cursor:pointer;}
   .tog-chip.excluded .name-btn{background:rgba(255,59,48,.08);color:var(--red);text-decoration:line-through;opacity:.75;}
   .tog-chip .hide-btn{padding:5px 9px;background:rgba(118,118,128,.08);border:none;border-left:1px solid rgba(0,0,0,.06);color:var(--ink-faint);cursor:pointer;font-size:.8rem;}
   .tog-chip.excluded .hide-btn{background:rgba(255,59,48,.1);color:var(--red);}
@@ -188,7 +190,7 @@
   /* ---------- ตัวกรองขั้นสูง (แท็บวิดีโอ) ---------- */
   .adv-filter-btn{border:none;border-radius:var(--r-sm);padding:10px 16px;font-size:.8rem;font-weight:700;
     background:rgba(118,118,128,.10);color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;gap:7px;
-    font-family:inherit;transition:background .15s;}
+    transition:background .15s;}
   .adv-filter-btn:hover{background:rgba(118,118,128,.18);}
   .adv-filter-btn.on{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;}
   .adv-badge{background:rgba(255,255,255,.28);color:inherit;font-size:.68rem;font-weight:800;padding:1px 8px;border-radius:999px;}
@@ -204,7 +206,7 @@
   }
   .quick-range-row{display:flex;flex-wrap:wrap;gap:8px;}
   .qr-btn{border:none;border-radius:999px;padding:7px 14px;font-size:.74rem;font-weight:700;
-    background:rgba(48,209,88,.12);color:var(--green-deep);cursor:pointer;font-family:inherit;transition:background .15s;}
+    background:rgba(48,209,88,.12);color:var(--green-deep);cursor:pointer;transition:background .15s;}
   .qr-btn:hover{background:rgba(48,209,88,.22);}
   .qr-btn.qr-clear{background:rgba(118,118,128,.12);color:var(--ink-soft);}
   .qr-btn.qr-clear:hover{background:rgba(118,118,128,.22);}
@@ -244,7 +246,7 @@
   .video-modal-head-actions button{background:rgba(255,255,255,.14);border:none;color:#fff;width:32px;height:32px;border-radius:9px;font-size:1rem;cursor:pointer;}
   .video-modal-scroll{overflow-y:auto;}
   .video-tabs-row{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px 0;}
-  .video-tab-btn{border:none;font-family:inherit;font-size:.76rem;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;background:rgba(48,209,88,.12);color:var(--green-deep);}
+  .video-tab-btn{border:none;font-size:.76rem;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;background:rgba(48,209,88,.12);color:var(--green-deep);}
   .video-tab-btn.on{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;}
   .video-frame-wrap{aspect-ratio:16/9;width:100%;position:relative;background:#000;flex-shrink:0;margin-top:12px;}
   .video-frame-wrap iframe{width:100%;height:100%;border:0;}
@@ -316,7 +318,7 @@
     <div class="nav-item" data-page="crime"><span class="nav-icon">🚓</span>คดีอาญา + รถหนัก</div>
     <div class="nav-item" data-page="traffic"><span class="nav-icon">🚦</span>จราจร + อำนวยความสะดวก</div>
     <div class="nav-item" data-page="monthly"><span class="nav-icon">📅</span>สรุปผลรายเดือน</div>
-    <div class="nav-item" data-page="video"><span class="nav-icon">🎥</span>หลักฐานวิดีโอ</div>
+    <div class="nav-item" data-page="video"><span class="nav-icon">🎥</span>วิ่งขวา</div>
   </aside>
 
   <main>
@@ -562,8 +564,8 @@
             <input type="date" id="videoDateTo">
           </div>
           <div>
-            <label class="adv-lbl">จังหวัด</label>
-            <select id="videoProvinceFilter"><option value="">ทุกจังหวัด</option></select>
+            <label class="adv-lbl">หน่วยรายงาน</label>
+            <select id="videoUnitAdvFilter"><option value="">ทุกหน่วย</option></select>
           </div>
           <div>
             <label class="adv-lbl">เจ้าหน้าที่ผู้รายงาน</label>
@@ -574,13 +576,14 @@
           <button type="button" class="qr-btn" data-range="today">วันนี้</button>
           <button type="button" class="qr-btn" data-range="7d">7 วันที่ผ่านมา</button>
           <button type="button" class="qr-btn" data-range="30d">เดือนนี้</button>
+          <button type="button" class="qr-btn" data-range="lastmonth">เดือนที่แล้ว</button>
           <button type="button" class="qr-btn qr-clear" data-range="clear">ล้างตัวกรองทั้งหมด</button>
         </div>
       </div>
 
       <div class="kpi-grid">
-        <div class="card kpi"><div class="lbl">📅 วันนี้</div><div class="val" id="vd_today">-</div><div class="sub" id="vd_today_badge"></div></div>
-        <div class="card kpi"><div class="lbl">👮 เจ้าหน้าที่ปฏิบัติงานวันนี้</div><div class="val" id="vd_officers_today">-</div></div>
+        <div class="card kpi" id="vd_today_card"><div class="lbl">📅 วันนี้</div><div class="val" id="vd_today">-</div><div class="sub" id="vd_today_badge"></div></div>
+        <div class="card kpi" id="vd_officers_today_card"><div class="lbl">👮 เจ้าหน้าที่ปฏิบัติงานวันนี้</div><div class="val" id="vd_officers_today">-</div></div>
         <div class="card kpi"><div class="lbl">📝 รายงานทั้งหมด</div><div class="val" id="vd_total">-</div></div>
         <div class="card kpi"><div class="lbl">📊 เฉลี่ยต่อวัน</div><div class="val" id="vd_avg">-</div></div>
         <div class="card kpi"><div class="lbl">🏢 หน่วยที่รายงาน</div><div class="val" id="vd_units">-</div></div>
@@ -588,7 +591,7 @@
       </div>
 
       <div class="grid2">
-        <div class="card chart-card">
+        <div class="card chart-card" id="chartVideoHourly_card">
           <div class="section-title">📊 ยอดรายงานรายชั่วโมง (วันนี้)</div>
           <div class="chart-wrap"><canvas id="chartVideoHourly"></canvas></div>
         </div>
@@ -623,7 +626,7 @@
     <button class="bn-item" data-page="crime"><span class="ic">🚓</span>คดีอาญา</button>
     <button class="bn-item" data-page="traffic"><span class="ic">🚦</span>จราจร</button>
     <button class="bn-item" data-page="monthly"><span class="ic">📅</span>รายเดือน</button>
-    <button class="bn-item" data-page="video"><span class="ic">🎥</span>วิดีโอ</button>
+    <button class="bn-item" data-page="video"><span class="ic">🎥</span>วิ่งขวา</button>
   </div>
 </nav>
 
@@ -960,9 +963,7 @@ function populateFilters() {
 
   const units = [...new Set(VIDEO_DATA.map(d=>d.unit))].filter(Boolean).sort();
   document.getElementById("videoUnitFilter").innerHTML = '<option value="">ทุกหน่วย</option>' + units.map(u=>`<option value="${u}">${u}</option>`).join("");
-
-  const videoProvinces = [...new Set(VIDEO_DATA.map(d=>d.plateProvince))].filter(Boolean).sort();
-  document.getElementById("videoProvinceFilter").innerHTML = '<option value="">ทุกจังหวัด</option>' + videoProvinces.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("");
+  document.getElementById("videoUnitAdvFilter").innerHTML = '<option value="">ทุกหน่วย</option>' + units.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("");
 
   const videoOfficers = [...new Set(VIDEO_DATA.map(d=>d.lineName))].filter(Boolean).sort();
   document.getElementById("videoOfficerFilter").innerHTML = '<option value="">เจ้าหน้าที่ทั้งหมด</option>' + videoOfficers.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("");
@@ -1489,7 +1490,7 @@ document.getElementById("btnToggleVideoAdvFilter").addEventListener("click", () 
   btn.classList.toggle("on", !isOpen);
 });
 
-["videoDateFrom","videoDateTo","videoProvinceFilter","videoOfficerFilter"].forEach(id=>{
+["videoDateFrom","videoDateTo","videoUnitAdvFilter","videoOfficerFilter"].forEach(id=>{
   document.getElementById(id).addEventListener("change", () => { updateVideoAdvFilterBadge(); renderVideoPage(); });
 });
 
@@ -1503,7 +1504,7 @@ document.querySelectorAll("#videoAdvFilterPanel .qr-btn").forEach(btn=>{
 
     if (range === "clear") {
       fromEl.value = ""; toEl.value = "";
-      document.getElementById("videoProvinceFilter").value = "";
+      document.getElementById("videoUnitAdvFilter").value = "";
       document.getElementById("videoOfficerFilter").value = "";
     } else if (range === "today") {
       fromEl.value = toStr; toEl.value = toStr;
@@ -1513,6 +1514,10 @@ document.querySelectorAll("#videoAdvFilterPanel .qr-btn").forEach(btn=>{
     } else if (range === "30d") {
       const from = new Date(today.getFullYear(), today.getMonth(), 1);
       fromEl.value = isoDate(from); toEl.value = toStr;
+    } else if (range === "lastmonth") {
+      const from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const to = new Date(today.getFullYear(), today.getMonth(), 0);
+      fromEl.value = isoDate(from); toEl.value = isoDate(to);
     }
     updateVideoAdvFilterBadge();
     renderVideoPage();
@@ -1521,7 +1526,7 @@ document.querySelectorAll("#videoAdvFilterPanel .qr-btn").forEach(btn=>{
 
 function updateVideoAdvFilterBadge() {
   const badge = document.getElementById("videoAdvFilterBadge");
-  const ids = ["videoDateFrom","videoDateTo","videoProvinceFilter","videoOfficerFilter"];
+  const ids = ["videoDateFrom","videoDateTo","videoUnitAdvFilter","videoOfficerFilter"];
   const activeCount = ids.filter(id => (document.getElementById(id).value || "").trim() !== "").length;
   if (activeCount > 0) {
     badge.style.display = "";
@@ -1531,6 +1536,22 @@ function updateVideoAdvFilterBadge() {
   }
 }
 
+// ซ่อนการ์ด "วันนี้" / เจ้าหน้าที่วันนี้ / กราฟรายชั่วโมง เมื่อมีการใช้ตัวกรองอื่นที่ไม่ใช่ช่วง "วันนี้"
+function isFilteringOtherThanToday() {
+  const todayStr = isoDate(new Date());
+  const dateFrom = document.getElementById("videoDateFrom").value;
+  const dateTo = document.getElementById("videoDateTo").value;
+  const unit = document.getElementById("videoUnitFilter").value;
+  const unitAdv = document.getElementById("videoUnitAdvFilter").value;
+  const officer = document.getElementById("videoOfficerFilter").value;
+  const q = document.getElementById("videoSearch").value.trim();
+
+  const isTodayRange = (dateFrom === todayStr && dateTo === todayStr);
+  const hasDateFilter = !!(dateFrom || dateTo) && !isTodayRange;
+  const hasOtherFilter = !!(unit || unitAdv || officer || q);
+  return hasDateFilter || hasOtherFilter;
+}
+
 let CURRENT_VIDEO_LIST = [];
 
 function renderVideoPage() {
@@ -1538,12 +1559,12 @@ function renderVideoPage() {
   const q = document.getElementById("videoSearch").value.trim().toLowerCase();
   const dateFrom = document.getElementById("videoDateFrom").value;
   const dateTo = document.getElementById("videoDateTo").value;
-  const province = document.getElementById("videoProvinceFilter").value;
+  const unitAdv = document.getElementById("videoUnitAdvFilter").value;
   const officer = document.getElementById("videoOfficerFilter").value;
 
   const data = VIDEO_DATA.filter(d=>{
     if (unit && d.unit !== unit) return false;
-    if (province && d.plateProvince !== province) return false;
+    if (unitAdv && d.unit !== unitAdv) return false;
     if (officer && d.lineName !== officer) return false;
     if (dateFrom && d.dateKey < dateFrom) return false;
     if (dateTo && d.dateKey > dateTo) return false;
@@ -1554,36 +1575,47 @@ function renderVideoPage() {
     return true;
   });
 
-  const todayKey = isoDate(new Date());
-  const yesterdayKey = isoDate(new Date(Date.now() - 86400000));
-  const todayData = data.filter(d=>d.dateKey===todayKey);
-  const yesterdayCount = data.filter(d=>d.dateKey===yesterdayKey).length;
-  const totalDays = new Set(data.map(d=>d.dateKey)).size;
+  const hideTodayWidgets = isFilteringOtherThanToday();
+  document.getElementById("vd_today_card").style.display = hideTodayWidgets ? "none" : "";
+  document.getElementById("vd_officers_today_card").style.display = hideTodayWidgets ? "none" : "";
+  document.getElementById("chartVideoHourly_card").style.display = hideTodayWidgets ? "none" : "";
 
-  document.getElementById("vd_today").textContent = fmt(todayData.length);
-  const badgeEl = document.getElementById("vd_today_badge");
-  if (yesterdayCount === 0 && todayData.length === 0) { badgeEl.textContent = "— เทียบเมื่อวาน"; }
-  else {
-    const diff = todayData.length - yesterdayCount;
-    const pct = yesterdayCount > 0 ? Math.round((diff / yesterdayCount) * 100) : 100;
-    badgeEl.textContent = (diff > 0 ? "▲ +" : diff < 0 ? "▼ " : "– ") + pct + "% เทียบเมื่อวาน";
-    badgeEl.style.color = diff > 0 ? "#1F8B3D" : diff < 0 ? "#D70015" : "var(--ink-faint)";
+  if (!hideTodayWidgets) {
+    const todayKey = isoDate(new Date());
+    const yesterdayKey = isoDate(new Date(Date.now() - 86400000));
+    const todayData = data.filter(d=>d.dateKey===todayKey);
+    const yesterdayCount = data.filter(d=>d.dateKey===yesterdayKey).length;
+
+    document.getElementById("vd_today").textContent = fmt(todayData.length);
+    const badgeEl = document.getElementById("vd_today_badge");
+    if (yesterdayCount === 0 && todayData.length === 0) { badgeEl.textContent = "— เทียบเมื่อวาน"; }
+    else {
+      const diff = todayData.length - yesterdayCount;
+      const pct = yesterdayCount > 0 ? Math.round((diff / yesterdayCount) * 100) : 100;
+      badgeEl.textContent = (diff > 0 ? "▲ +" : diff < 0 ? "▼ " : "– ") + pct + "% เทียบเมื่อวาน";
+      badgeEl.style.color = diff > 0 ? "#1F8B3D" : diff < 0 ? "#D70015" : "var(--ink-faint)";
+    }
+    document.getElementById("vd_officers_today").textContent = fmt(new Set(todayData.map(d=>d.lineName)).size);
+
+    const hourly = new Array(24).fill(0);
+    todayData.forEach(d=> hourly[d.hour]++);
+    if (chartVideoHourly) chartVideoHourly.destroy();
+    chartVideoHourly = new Chart(document.getElementById("chartVideoHourly"), {
+      type:"bar",
+      data:{ labels: hourly.map((_,h)=>h+":00"), datasets:[{ label:"รายงาน", data:hourly, backgroundColor:"#30D158", borderRadius:5, maxBarThickness:18 }]},
+      options:{ maintainAspectRatio:false, plugins:{legend:{display:false}},
+        scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
+    });
+  } else if (chartVideoHourly) {
+    chartVideoHourly.destroy();
+    chartVideoHourly = null;
   }
-  document.getElementById("vd_officers_today").textContent = fmt(new Set(todayData.map(d=>d.lineName)).size);
+
+  const totalDays = new Set(data.map(d=>d.dateKey)).size;
   document.getElementById("vd_total").textContent = fmt(data.length);
   document.getElementById("vd_avg").textContent = totalDays ? (data.length / totalDays).toFixed(1) : "0";
   document.getElementById("vd_units").textContent = fmt(new Set(data.map(d=>d.unit)).size);
   document.getElementById("vd_days").textContent = fmt(totalDays);
-
-  const hourly = new Array(24).fill(0);
-  todayData.forEach(d=> hourly[d.hour]++);
-  if (chartVideoHourly) chartVideoHourly.destroy();
-  chartVideoHourly = new Chart(document.getElementById("chartVideoHourly"), {
-    type:"bar",
-    data:{ labels: hourly.map((_,h)=>h+":00"), datasets:[{ label:"รายงาน", data:hourly, backgroundColor:"#30D158", borderRadius:5, maxBarThickness:18 }]},
-    options:{ maintainAspectRatio:false, plugins:{legend:{display:false}},
-      scales:{ x:{grid:{display:false},ticks:{font:{size:9}}}, y:{beginAtZero:true,ticks:{precision:0}} } }
-  });
 
   const byDay = {};
   data.forEach(d=> byDay[d.dateKey]=(byDay[d.dateKey]||0)+1);
