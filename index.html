@@ -681,6 +681,7 @@
           <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
             <span style="font-size:.72rem;color:var(--ink-faint);">แสดงต่อหน้า</span>
             <select id="videoListPageSize">
+               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
               <option value="50">50</option>
@@ -1759,7 +1760,7 @@ function isFilteringOtherThanToday() {
 let CURRENT_VIDEO_LIST = [];
 let videoListFullSorted = [];
 let videoListPage = 1;
-let videoListPageSize = 10;
+let videoListPageSize = 5;
 
 document.getElementById("videoListPageSize").addEventListener("change", e=>{
   videoListPageSize = parseInt(e.target.value, 10) || 10;
