@@ -314,15 +314,12 @@
       <div class="t1">📊 ศูนย์รวมผลการปฏิบัติ</div>
       <div class="t2">ส.ทล.3 กก.1 บก.ทล.</div>
     </div>
-    <div class="nav-item active" data-page="overview"><span class="nav-icon">🏠</span>ภาพรวม</div>
-    <div class="nav-item" data-page="crime"><span class="nav-icon">🚓</span>คดีอาญา + รถหนัก</div>
-    <div class="nav-item" data-page="traffic"><span class="nav-icon">🚦</span>จราจร + อำนวยความสะดวก</div>
-    <div class="nav-item" data-page="monthly"><span class="nav-icon">📅</span>สรุปผลรายเดือน</div>
+    <div class="nav-item active" data-page="monthly"><span class="nav-icon">📅</span>สรุปผลรายเดือน</div>
     <div class="nav-item" data-page="video"><span class="nav-icon">🎥</span>วิ่งขวา</div>
   </aside>
 
   <main>
-    <section class="page active" id="page-overview">
+    <section class="page" id="page-overview">
       <div class="hero">
         <h1>📊 ศูนย์รวมผลการปฏิบัติ ส.ทล.3 กก.1 บก.ทล.</h1>
         <p>รวมข้อมูลจากฐานคดีอาญา+รถหนัก และฐานหลักฐานวิดีโอรถวิ่งขวา ไว้ในที่เดียว</p>
@@ -460,7 +457,7 @@
       </div>
     </section>
 
-    <section class="page" id="page-monthly">
+    <section class="page active" id="page-monthly">
       <div class="hero" style="padding:26px 30px;">
         <h1 style="font-size:1.4rem;">📅 สรุปผลการปฏิบัติรายเดือน</h1>
         <p id="monthlyCoverSub">—</p>
@@ -481,6 +478,7 @@
         <button data-sub="top">🏆 TOP ผู้ปฏิบัติ</button>
         <button data-sub="unit">🏢 หน่วยงาน</button>
         <button data-sub="category">📋 หมวดหมู่</button>
+        <button data-sub="traffic">🚦 จราจร+อำนวยฯ</button>
         <button data-sub="compare">📅 เปรียบเทียบรายเดือน</button>
       </div>
 
@@ -521,6 +519,44 @@
         <div class="card chart-card">
           <div class="section-title">📋 สถิติตามหมวดหมู่ (คดีอาญา)</div>
           <div class="list-grid" id="monthlyCategoryGrid"></div>
+        </div>
+      </div>
+
+      <div id="monthlySubTraffic" style="display:none;">
+        <div class="toolbar">
+          <div class="seg" id="monthlyTrafficViewSeg">
+            <button class="on" data-view="person">👮 รายคน</button>
+            <button data-view="unit">🏢 รายหน่วย</button>
+            <button data-view="radio">🚗 รายรถวิทยุ</button>
+          </div>
+          <select id="monthlyTrafficSourceFilter">
+            <option value="">ทุกประเภท</option>
+            <option value="จราจร">🚦 จับจราจร</option>
+            <option value="อำนวยความสะดวก">🤝 อำนวยความสะดวก+ขบวน</option>
+          </select>
+        </div>
+
+        <div class="kpi-grid" id="monthlyTrafficKpiRow"></div>
+
+        <div id="monthlyTrafficViewPerson">
+          <div class="card chart-card">
+            <div class="section-title">🏆 อันดับผลงานรายคน</div>
+            <div class="list-grid" id="monthlyTrafficPersonGrid"></div>
+          </div>
+        </div>
+
+        <div id="monthlyTrafficViewUnit" style="display:none;">
+          <div class="card chart-card">
+            <div class="section-title">🏢 ผลงานแยกตามหน่วย</div>
+            <div class="list-grid" id="monthlyTrafficUnitGrid"></div>
+          </div>
+        </div>
+
+        <div id="monthlyTrafficViewRadio" style="display:none;">
+          <div class="card chart-card">
+            <div class="section-title">🚗 สถิติแยกตามหมายเลขรถวิทยุ</div>
+            <div class="list-grid" id="monthlyTrafficRadioGrid"></div>
+          </div>
         </div>
       </div>
 
@@ -622,10 +658,7 @@
 
 <nav class="bottom-nav">
   <div class="bn-row">
-    <button class="bn-item active" data-page="overview"><span class="ic">🏠</span>ภาพรวม</button>
-    <button class="bn-item" data-page="crime"><span class="ic">🚓</span>คดีอาญา</button>
-    <button class="bn-item" data-page="traffic"><span class="ic">🚦</span>จราจร</button>
-    <button class="bn-item" data-page="monthly"><span class="ic">📅</span>รายเดือน</button>
+    <button class="bn-item active" data-page="monthly"><span class="ic">📅</span>รายเดือน</button>
     <button class="bn-item" data-page="video"><span class="ic">🎥</span>วิ่งขวา</button>
   </div>
 </nav>
@@ -1237,7 +1270,7 @@ document.getElementById("monthlySubSeg").addEventListener("click", e=>{
   const btn = e.target.closest("button"); if(!btn) return;
   monthlySub = btn.dataset.sub;
   document.querySelectorAll("#monthlySubSeg button").forEach(b=>b.classList.toggle("on", b===btn));
-  ["overview","top","unit","category","compare"].forEach(s=>
+  ["overview","top","unit","category","traffic","compare"].forEach(s=>
     document.getElementById("monthlySub"+s[0].toUpperCase()+s.slice(1)).style.display = (s===monthlySub) ? "" : "none"
   );
   renderMonthlySummary();
@@ -1252,6 +1285,11 @@ function getMonthlyTraffic() {
   const key = getMonthlyKey();
   return TRAFFIC_DATA.filter(d => d.monthKey===key && (!monthlySelType || d.type===monthlySelType));
 }
+// จราจร+อำนวยฯ ไม่มีแนวคิด จับเอง/จับร่วม จึงกรองแค่ตามเดือนที่เลือก (ไม่ผูกกับ monthlySelType)
+function getMonthlyTrafficAll() {
+  const key = getMonthlyKey();
+  return TRAFFIC_DATA.filter(d => d.monthKey===key);
+}
 
 function toggleMonthlyExcluded(name) {
   if (monthlyExcludedOfficers.has(name)) monthlyExcludedOfficers.delete(name);
@@ -1261,6 +1299,110 @@ function toggleMonthlyExcluded(name) {
 function resetMonthlyExcluded() {
   monthlyExcludedOfficers.clear();
   renderMonthlySummary();
+}
+
+/* ---------- จราจร+อำนวยความสะดวก ภายในหน้ารายเดือน ---------- */
+let monthlyTrafficView = "person";
+document.getElementById("monthlyTrafficViewSeg").addEventListener("click", e=>{
+  const btn = e.target.closest("button"); if(!btn) return;
+  monthlyTrafficView = btn.dataset.view;
+  document.querySelectorAll("#monthlyTrafficViewSeg button").forEach(b=>b.classList.toggle("on", b===btn));
+  document.getElementById("monthlyTrafficViewPerson").style.display = monthlyTrafficView==="person" ? "" : "none";
+  document.getElementById("monthlyTrafficViewUnit").style.display = monthlyTrafficView==="unit" ? "" : "none";
+  document.getElementById("monthlyTrafficViewRadio").style.display = monthlyTrafficView==="radio" ? "" : "none";
+  renderMonthlyTrafficSection();
+});
+document.getElementById("monthlyTrafficSourceFilter").addEventListener("change", renderMonthlyTrafficSection);
+
+function getMonthlyTrafficFiltered() {
+  const source = document.getElementById("monthlyTrafficSourceFilter").value;
+  return getMonthlyTrafficAll().filter(d => !source || d.source===source);
+}
+
+function renderMonthlyTrafficSection() {
+  const data = getMonthlyTrafficFiltered();
+  const units = new Set(); const officers = new Set(); const radios = new Set();
+  data.forEach(d=>{
+    d.unit.split(",").forEach(u=>{ if(u.trim()) units.add(u.trim()); });
+    d.officers.split(",").forEach(o=>{ if(o.trim()) officers.add(o.trim()); });
+    if (d.radio) radios.add(d.radio);
+  });
+  document.getElementById("monthlyTrafficKpiRow").innerHTML = [
+    ["📝 รายการทั้งหมด", data.length], ["🏢 หน่วยที่ปฏิบัติ", units.size],
+    ["👮 เจ้าหน้าที่", officers.size], ["🚗 รถวิทยุที่ใช้งาน", radios.size]
+  ].map(([l,v])=>`<div class="card kpi"><div class="lbl">${l}</div><div class="val">${fmt(v)}</div></div>`).join("");
+
+  if (monthlyTrafficView === "person") renderMonthlyTrafficPersonView(data);
+  else if (monthlyTrafficView === "unit") renderMonthlyTrafficUnitView(data);
+  else renderMonthlyTrafficRadioView(data);
+}
+
+function renderMonthlyTrafficPersonView(data) {
+  const st = {};
+  data.forEach(d=> d.officers.split(",").forEach(o=>{ o=o.trim(); if(!o) return;
+    if(!st[o]) st[o]={total:0,jarajorn:0,amnuay:0};
+    st[o].total++; if(d.source==="จราจร") st[o].jarajorn++; else st[o].amnuay++;
+  }));
+  const sorted = Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById("monthlyTrafficPersonGrid").innerHTML = sorted.length ? sorted.map(([name,s],i)=>`
+    <div class="card item-card" onclick="openMonthlyTrafficOfficerModal('${esc(name)}')">
+      <div class="item-rank">#${i+1}</div>
+      <div class="item-name">${esc(name)}</div>
+      <div class="item-stats"><span class="pill">📝 ${s.total} ครั้ง</span><span class="pill o">🚦 ${s.jarajorn}</span><span class="pill b">🤝 ${s.amnuay}</span></div>
+    </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+}
+
+function renderMonthlyTrafficUnitView(data) {
+  const st = {};
+  data.forEach(d=> d.unit.split(",").forEach(u=>{ u=u.trim(); if(!u) return;
+    if(!st[u]) st[u]={total:0,jarajorn:0,amnuay:0};
+    st[u].total++; if(d.source==="จราจร") st[u].jarajorn++; else st[u].amnuay++;
+  }));
+  const sorted = Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById("monthlyTrafficUnitGrid").innerHTML = sorted.length ? sorted.map(([name,s],i)=>`
+    <div class="card item-card" onclick="openMonthlyTrafficUnitModal('${esc(name)}')">
+      <div class="item-rank">#${i+1}</div>
+      <div class="item-name">🏢 ${esc(name)}</div>
+      <div class="item-stats"><span class="pill">📝 ${s.total} ครั้ง</span><span class="pill o">🚦 ${s.jarajorn}</span><span class="pill b">🤝 ${s.amnuay}</span></div>
+    </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+}
+
+function renderMonthlyTrafficRadioView(data) {
+  const st = {};
+  data.forEach(d=>{
+    const r = d.radio; if (!r) return;
+    if(!st[r]) st[r]={total:0,jarajorn:0,amnuay:0};
+    st[r].total++; if(d.source==="จราจร") st[r].jarajorn++; else st[r].amnuay++;
+  });
+  const sorted = Object.entries(st).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById("monthlyTrafficRadioGrid").innerHTML = sorted.length ? sorted.map(([radio,s],i)=>`
+    <div class="card item-card" onclick="openMonthlyTrafficRadioModal('${esc(radio)}')">
+      <div class="item-rank">#${i+1}</div>
+      <div class="item-name">🚗 รถวิทยุ ${esc(radio)}</div>
+      <div class="item-stats"><span class="pill">📝 ${s.total} ครั้ง</span><span class="pill o">🚦 ${s.jarajorn}</span><span class="pill b">🤝 ${s.amnuay}</span></div>
+    </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+}
+
+function openMonthlyTrafficOfficerModal(name) {
+  const data = getMonthlyTrafficFiltered().filter(d => d.officers.split(",").map(s=>s.trim()).includes(name));
+  document.getElementById("modalName").textContent = name;
+  document.getElementById("modalSub").textContent = `📝 ${data.length} รายการ`;
+  renderModalRecords(data);
+  document.getElementById("modalBg").classList.add("open");
+}
+function openMonthlyTrafficUnitModal(name) {
+  const data = getMonthlyTrafficFiltered().filter(d => d.unit.split(",").map(s=>s.trim()).includes(name));
+  document.getElementById("modalName").textContent = "🏢 " + name;
+  document.getElementById("modalSub").textContent = `📝 ${data.length} รายการ`;
+  renderModalRecords(data);
+  document.getElementById("modalBg").classList.add("open");
+}
+function openMonthlyTrafficRadioModal(radio) {
+  const data = getMonthlyTrafficFiltered().filter(d => d.radio === radio);
+  document.getElementById("modalName").textContent = "🚗 รถวิทยุ " + radio;
+  document.getElementById("modalSub").textContent = `📝 ${data.length} รายการ`;
+  renderModalRecords(data);
+  document.getElementById("modalBg").classList.add("open");
 }
 
 function renderMonthlySummary() {
@@ -1377,6 +1519,10 @@ function renderMonthlySummary() {
         <div class="item-name">${esc(c)}</div>
         <div class="item-stats"><span class="pill">📁 ${fmt(v)} คดี</span></div>
       </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  }
+
+  else if (monthlySub === "traffic") {
+    renderMonthlyTrafficSection();
   }
 
   else if (monthlySub === "compare") {
