@@ -676,8 +676,20 @@
       </div>
 
       <div class="card chart-card">
-        <div class="section-title">📋 รายการล่าสุด <span style="font-size:.72rem;font-weight:400;color:var(--ink-faint);">(คลิกการ์ดเพื่อพรีวิวหลักฐาน)</span></div>
+        <div class="section-title" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
+          <span>📋 รายการล่าสุด <span style="font-size:.72rem;font-weight:400;color:var(--ink-faint);">(คลิกการ์ดเพื่อพรีวิวหลักฐาน)</span></span>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:600;">
+            <span style="font-size:.72rem;color:var(--ink-faint);">แสดงต่อหน้า</span>
+            <select id="videoListPageSize">
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </label>
+        </div>
         <div class="list-grid" id="videoList"></div>
+        <div id="videoListPagination" style="display:flex;justify-content:center;align-items:center;gap:12px;margin-top:20px;flex-wrap:wrap;"></div>
       </div>
     </section>
   </main>
@@ -1745,6 +1757,57 @@ function isFilteringOtherThanToday() {
 }
 
 let CURRENT_VIDEO_LIST = [];
+let videoListFullSorted = [];
+let videoListPage = 1;
+let videoListPageSize = 10;
+
+document.getElementById("videoListPageSize").addEventListener("change", e=>{
+  videoListPageSize = parseInt(e.target.value, 10) || 10;
+  videoListPage = 1;
+  renderVideoListPage();
+});
+
+function renderVideoListPage() {
+  const total = videoListFullSorted.length;
+  const totalPages = Math.max(1, Math.ceil(total / videoListPageSize));
+  if (videoListPage > totalPages) videoListPage = totalPages;
+  const start = (videoListPage - 1) * videoListPageSize;
+  const pageItems = videoListFullSorted.slice(start, start + videoListPageSize);
+  CURRENT_VIDEO_LIST = pageItems;
+
+  document.getElementById("videoList").innerHTML = pageItems.length ? pageItems.map((d,idx)=>`
+    <div class="card ev-card" onclick="openVideoModal(${idx})">
+      <div class="ev-top"><span class="ev-plate">${esc(d.plateChar)} ${esc(d.plateNumber)}</span><span class="ev-time">${esc(d.timestamp)}</span></div>
+      <div class="ev-meta">📍 ${esc(d.plateProvince)} · 🏢 ${esc(d.unit)}</div>
+      <div class="ev-meta">👤 ${esc(d.lineName)} · 🎥 ${d.videoCount} วิดีโอ · 🧾 ${d.ticketCount} ใบสั่ง · 📸 ${d.driverCount} รูปผู้ขับ</div>
+      <div class="ev-link">▶ แตะเพื่อพรีวิวหลักฐาน</div>
+    </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+
+  renderVideoListPaginationControls(total, totalPages);
+}
+
+function renderVideoListPaginationControls(total, totalPages) {
+  const el = document.getElementById("videoListPagination");
+  if (!el) return;
+  if (total === 0) { el.innerHTML = ""; return; }
+  const prevDisabled = videoListPage <= 1;
+  const nextDisabled = videoListPage >= totalPages;
+  el.innerHTML = `
+    <button class="qr-btn qr-clear" id="vlpPrev" ${prevDisabled?'disabled':''} style="${prevDisabled?'opacity:.4;cursor:default;':''}">‹ ก่อนหน้า</button>
+    <span style="font-size:.8rem;color:var(--ink-soft);font-weight:600;">หน้า ${videoListPage} / ${totalPages} · ทั้งหมด ${fmt(total)} รายการ</span>
+    <button class="qr-btn qr-clear" id="vlpNext" ${nextDisabled?'disabled':''} style="${nextDisabled?'opacity:.4;cursor:default;':''}">ถัดไป ›</button>
+  `;
+  const prevBtn = document.getElementById("vlpPrev");
+  const nextBtn = document.getElementById("vlpNext");
+  if (prevBtn && !prevDisabled) prevBtn.addEventListener("click", ()=>{
+    videoListPage--; renderVideoListPage();
+    document.getElementById("videoList").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+  if (nextBtn && !nextDisabled) nextBtn.addEventListener("click", ()=>{
+    videoListPage++; renderVideoListPage();
+    document.getElementById("videoList").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+}
 
 function renderVideoPage() {
   const unit = document.getElementById("videoUnitFilter").value;
@@ -1851,15 +1914,9 @@ function renderVideoPage() {
     </div>`;
   }).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 
-  const sorted = data.slice().sort((a,b)=> b.dateKey.localeCompare(a.dateKey)).slice(0,60);
-  CURRENT_VIDEO_LIST = sorted;
-  document.getElementById("videoList").innerHTML = sorted.length ? sorted.map((d,idx)=>`
-    <div class="card ev-card" onclick="openVideoModal(${idx})">
-      <div class="ev-top"><span class="ev-plate">${esc(d.plateChar)} ${esc(d.plateNumber)}</span><span class="ev-time">${esc(d.timestamp)}</span></div>
-      <div class="ev-meta">📍 ${esc(d.plateProvince)} · 🏢 ${esc(d.unit)}</div>
-      <div class="ev-meta">👤 ${esc(d.lineName)} · 🎥 ${d.videoCount} วิดีโอ · 🧾 ${d.ticketCount} ใบสั่ง · 📸 ${d.driverCount} รูปผู้ขับ</div>
-      <div class="ev-link">▶ แตะเพื่อพรีวิวหลักฐาน</div>
-    </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
+  videoListFullSorted = data.slice().sort((a,b)=> b.dateKey.localeCompare(a.dateKey));
+  videoListPage = 1;
+  renderVideoListPage();
 }
 
 /* ============================================================
