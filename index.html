@@ -1052,7 +1052,11 @@ function renderTrafficRadioView(data) {
 }
 
 let monthlySelYear = null, monthlySelMonth = null, monthlySelType = "", monthlySub = "overview";
-let monthlyExcludedOfficers = new Set();
+let monthlyExcludedOfficers = new Set([
+  "พ.ต.ต.เสฐวุฒิ ลี้เกษร",
+  "ร.ต.อ.นิพันธ์ อำพันดี",
+  "ร.ต.อ.พิษณุ ทัศญาณ"
+]);
 let chartMonthlyCompare;
 
 function populateMonthlyFilters() {
