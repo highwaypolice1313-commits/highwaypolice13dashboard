@@ -217,6 +217,27 @@
     .hero h1{font-size:1.35rem;}
     .list-grid{grid-template-columns:1fr;}
   }
+
+   #monthlyMonthTabs{
+  overflow-x:auto;
+  overflow-y:hidden;
+  flex-wrap:nowrap;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  max-width:100%;
+}
+#monthlyMonthTabs::-webkit-scrollbar{display:none;}
+#monthlyMonthTabs button{
+  flex-shrink:0;
+  white-space:nowrap;
+
+   @media(max-width:640px){
+  #page-monthly .toolbar{flex-direction:column;align-items:stretch;}
+  #page-monthly .toolbar > *{width:100%;}
+  #monthlyMonthTabs{width:100%;}
+}
+}
+   
 </style>
 </head>
 <body>
