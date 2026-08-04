@@ -185,7 +185,27 @@
 
   .no-data{text-align:center;padding:50px 20px;color:var(--ink-faint);}
 
-  .ev-card{padding:16px;}
+  /* ---------- ตัวกรองขั้นสูง (แท็บวิดีโอ) ---------- */
+  .adv-filter-btn{border:none;border-radius:var(--r-sm);padding:10px 16px;font-size:.8rem;font-weight:700;
+    background:rgba(118,118,128,.10);color:var(--ink-soft);cursor:pointer;display:inline-flex;align-items:center;gap:7px;
+    font-family:inherit;transition:background .15s;}
+  .adv-filter-btn:hover{background:rgba(118,118,128,.18);}
+  .adv-filter-btn.on{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;}
+  .adv-badge{background:rgba(255,255,255,.28);color:inherit;font-size:.68rem;font-weight:800;padding:1px 8px;border-radius:999px;}
+  .adv-filter-btn:not(.on) .adv-badge{background:rgba(48,209,88,.18);color:var(--green-deep);}
+  .adv-filter-panel{animation:fadeUp .25s cubic-bezier(.2,.8,.3,1);}
+  .adv-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px;}
+  .adv-lbl{display:block;font-size:.72rem;font-weight:700;color:var(--ink-faint);margin-bottom:5px;}
+  .adv-filter-grid select,.adv-filter-grid input{width:100%;}
+  .quick-range-row{display:flex;flex-wrap:wrap;gap:8px;}
+  .qr-btn{border:none;border-radius:999px;padding:7px 14px;font-size:.74rem;font-weight:700;
+    background:rgba(48,209,88,.12);color:var(--green-deep);cursor:pointer;font-family:inherit;transition:background .15s;}
+  .qr-btn:hover{background:rgba(48,209,88,.22);}
+  .qr-btn.qr-clear{background:rgba(118,118,128,.12);color:var(--ink-soft);}
+  .qr-btn.qr-clear:hover{background:rgba(118,118,128,.22);}
+
+  .ev-card{padding:16px;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+  .ev-card:hover{transform:translateY(-3px);}
   .ev-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
   .ev-plate{font-weight:800;color:var(--green-deep);font-size:1rem;}
   .ev-time{font-size:.72rem;color:var(--ink-faint);}
@@ -205,6 +225,36 @@
   .m-rec{background:rgba(0,0,0,.03);border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:.84rem;}
   .m-rec .d{font-weight:700;color:var(--green-deep);}
 
+  /* ---------- Evidence Previewer Modal (วิดีโอ/รูปหลักฐาน) ---------- */
+  #videoModalOverlay{position:fixed;inset:0;z-index:600;background:rgba(20,20,22,.55);backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%);
+    display:none;align-items:center;justify-content:center;padding:20px;}
+  #videoModalOverlay.open{display:flex;}
+  .video-modal{background:var(--glass-strong);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+    border-radius:26px;max-width:600px;width:100%;max-height:92vh;overflow:hidden;box-shadow:var(--sh-2);border:1px solid rgba(255,255,255,.5);
+    display:flex;flex-direction:column;}
+  .video-modal-head{background:linear-gradient(160deg,#0f1e35,#1a2235);color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;}
+  .video-modal-head .nm{font-weight:800;font-size:1.05rem;}
+  .video-modal-head .sub{font-size:.76rem;color:rgba(255,255,255,.6);margin-top:3px;}
+  .video-modal-head-actions{display:flex;align-items:center;gap:14px;}
+  .video-modal-head-actions button{background:rgba(255,255,255,.14);border:none;color:#fff;width:32px;height:32px;border-radius:9px;font-size:1rem;cursor:pointer;}
+  .video-modal-scroll{overflow-y:auto;}
+  .video-tabs-row{display:flex;gap:8px;flex-wrap:wrap;padding:14px 18px 0;}
+  .video-tab-btn{border:none;font-family:inherit;font-size:.76rem;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer;background:rgba(48,209,88,.12);color:var(--green-deep);}
+  .video-tab-btn.on{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;}
+  .video-frame-wrap{aspect-ratio:16/9;width:100%;position:relative;background:#000;flex-shrink:0;margin-top:12px;}
+  .video-frame-wrap iframe{width:100%;height:100%;border:0;}
+  .video-loading-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:#000;z-index:2;transition:opacity .25s ease;}
+  .video-loading-overlay.hidden-loading{opacity:0;visibility:hidden;}
+  .video-loading-overlay .lbl{color:#A7F0BE;font-size:.72rem;font-weight:600;}
+  .spinner-lg{border:4px solid rgba(48,209,88,.18);border-top:4px solid var(--green);border-radius:50%;width:38px;height:38px;animation:sp .75s linear infinite;}
+  .video-modal-photos{padding:16px 18px;}
+  .video-modal-photos .lbl{font-size:.72rem;font-weight:700;color:var(--ink-faint);margin-bottom:8px;}
+  .photo-thumb-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .photo-thumb{width:64px;height:64px;border-radius:14px;overflow:hidden;border:1px solid var(--card-border);flex-shrink:0;display:block;}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;}
+  .video-modal-foot{padding:14px 18px;border-top:1px solid var(--sep);display:flex;justify-content:flex-end;flex-shrink:0;}
+  .video-modal-foot a{font-size:.78rem;font-weight:700;color:var(--blue);text-decoration:none;}
+
   @media(max-width:1024px){
     .sidebar{display:none;}
     .mobile-topbar{display:block;}
@@ -216,6 +266,8 @@
     .kpi-grid{grid-template-columns:repeat(2,1fr);}
     .hero h1{font-size:1.35rem;}
     .list-grid{grid-template-columns:1fr;}
+    #videoModalOverlay{padding:12px;}
+    .video-modal{border-radius:20px;}
   }
 
    #monthlyMonthTabs{
@@ -487,6 +539,38 @@
       <div class="toolbar">
         <select id="videoUnitFilter"><option value="">ทุกหน่วย</option></select>
         <input type="text" id="videoSearch" placeholder="ค้นหาทะเบียน / จังหวัด / ผู้รายงาน..." style="min-width:220px;">
+        <button type="button" class="adv-filter-btn" id="btnToggleVideoAdvFilter">
+          <span>⚙️ ตัวกรองขั้นสูง</span>
+          <span class="adv-badge" id="videoAdvFilterBadge" style="display:none;">0</span>
+        </button>
+      </div>
+
+      <div class="card chart-card adv-filter-panel" id="videoAdvFilterPanel" style="display:none;margin-bottom:22px;">
+        <div class="section-title" style="margin-bottom:12px;">⚙️ ตัวกรองขั้นสูง</div>
+        <div class="adv-filter-grid">
+          <div>
+            <label class="adv-lbl">ตั้งแต่วันที่</label>
+            <input type="date" id="videoDateFrom">
+          </div>
+          <div>
+            <label class="adv-lbl">ถึงวันที่</label>
+            <input type="date" id="videoDateTo">
+          </div>
+          <div>
+            <label class="adv-lbl">จังหวัด</label>
+            <select id="videoProvinceFilter"><option value="">ทุกจังหวัด</option></select>
+          </div>
+          <div>
+            <label class="adv-lbl">เจ้าหน้าที่ผู้รายงาน</label>
+            <select id="videoOfficerFilter"><option value="">เจ้าหน้าที่ทั้งหมด</option></select>
+          </div>
+        </div>
+        <div class="quick-range-row">
+          <button type="button" class="qr-btn" data-range="today">วันนี้</button>
+          <button type="button" class="qr-btn" data-range="7d">7 วันที่ผ่านมา</button>
+          <button type="button" class="qr-btn" data-range="30d">เดือนนี้</button>
+          <button type="button" class="qr-btn qr-clear" data-range="clear">ล้างตัวกรองทั้งหมด</button>
+        </div>
       </div>
 
       <div class="kpi-grid">
@@ -521,7 +605,7 @@
       </div>
 
       <div class="card chart-card">
-        <div class="section-title">📋 รายการล่าสุด</div>
+        <div class="section-title">📋 รายการล่าสุด <span style="font-size:.72rem;font-weight:400;color:var(--ink-faint);">(คลิกการ์ดเพื่อพรีวิวหลักฐาน)</span></div>
         <div class="list-grid" id="videoList"></div>
       </div>
     </section>
@@ -548,6 +632,41 @@
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Embedded Evidence Previewer Modal (วิดีโอหลายไฟล์ + รูปภาพ) -->
+<div id="videoModalOverlay">
+  <div class="video-modal">
+    <div class="video-modal-head">
+      <div>
+        <div class="nm" id="videoModalTitle">ทะเบียนรถ</div>
+        <div class="sub" id="videoModalSub">-</div>
+      </div>
+      <div class="video-modal-head-actions">
+        <button id="btnFullscreenVideo" title="ดูแบบเต็มจอ">⛶</button>
+        <button id="btnCloseVideoModal">✕</button>
+      </div>
+    </div>
+    <div class="video-modal-scroll">
+      <div class="video-tabs-row" id="videoTabsRow"></div>
+      <div class="video-frame-wrap" id="videoFrameWrap">
+        <div class="video-loading-overlay" id="videoLoadingOverlay">
+          <span class="spinner-lg"></span>
+          <span class="lbl">กำลังโหลดวิดีโอ...</span>
+        </div>
+        <iframe id="videoModalFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+      </div>
+      <div class="video-modal-photos">
+        <div class="lbl">🧾 รูปสำเนาใบสั่ง</div>
+        <div class="photo-thumb-row" id="ticketCopyThumbs"></div>
+        <div class="lbl">📸 รูปหลักฐานผู้ขับขี่</div>
+        <div class="photo-thumb-row" id="driverPhotoThumbs"></div>
+      </div>
+    </div>
+    <div class="video-modal-foot">
+      <a id="videoModalOpenLink" href="#" target="_blank">เปิดโฟลเดอร์หลักฐานทั้งหมดบน Drive ↗</a>
+    </div>
   </div>
 </div>
 
@@ -644,6 +763,16 @@ async function loadCrimeData() {
   return out;
 }
 
+// แปลงคอลัมน์ JSON (วิดีโอ/รูปสำเนาใบสั่ง/รูปผู้ขับขี่) ให้เป็น array ของอ็อบเจกต์ไฟล์จริง
+// (เดิมใช้แค่ safeJsonLen() นับจำนวน — ตอนนี้ parse เต็มรูปแบบเพื่อใช้เปิดพรีวิวหลักฐานได้)
+function safeJsonArr(v) {
+  if (!v) return [];
+  try {
+    const parsed = JSON.parse(v);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) { return []; }
+}
+
 async function loadVideoData() {
   const rows = await fetchSheetRows(VIDEO_SHEET_ID, VIDEO_TAB_NAME);
   const out = [];
@@ -652,6 +781,9 @@ async function loadVideoData() {
     if (!r || !r[0]) continue;
     const ts = parseThaiDate(r[0]) || new Date();
     const fullDt = parseFullDateTime(r[0]) || ts;
+    const videos = safeJsonArr(r[10]);
+    const ticketCopies = safeJsonArr(r[11]);
+    const driverPhotos = safeJsonArr(r[12]);
     out.push({
       timestamp: r[0],
       date: ts,
@@ -663,16 +795,15 @@ async function loadVideoData() {
       plateProvince: r[6] || "-",
       unit: r[7] || "-",
       folderUrl: r[8] || "#",
-      videoCount: safeJsonLen(r[10]),
-      ticketCount: safeJsonLen(r[11]),
-      driverCount: safeJsonLen(r[12])
+      videos: videos,
+      ticketCopies: ticketCopies,
+      driverPhotos: driverPhotos,
+      videoCount: videos.length,
+      ticketCount: ticketCopies.length,
+      driverCount: driverPhotos.length
     });
   }
   return out;
-}
-function safeJsonLen(v) {
-  if (!v) return 0;
-  try { return JSON.parse(v).length; } catch (e) { return 0; }
 }
 
 async function loadTrafficRows(tabName, sourceLabel) {
@@ -824,6 +955,12 @@ function populateFilters() {
 
   const units = [...new Set(VIDEO_DATA.map(d=>d.unit))].filter(Boolean).sort();
   document.getElementById("videoUnitFilter").innerHTML = '<option value="">ทุกหน่วย</option>' + units.map(u=>`<option value="${u}">${u}</option>`).join("");
+
+  const videoProvinces = [...new Set(VIDEO_DATA.map(d=>d.plateProvince))].filter(Boolean).sort();
+  document.getElementById("videoProvinceFilter").innerHTML = '<option value="">ทุกจังหวัด</option>' + videoProvinces.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("");
+
+  const videoOfficers = [...new Set(VIDEO_DATA.map(d=>d.lineName))].filter(Boolean).sort();
+  document.getElementById("videoOfficerFilter").innerHTML = '<option value="">เจ้าหน้าที่ทั้งหมด</option>' + videoOfficers.map(o=>`<option value="${esc(o)}">${esc(o)}</option>`).join("");
 
   const tMonths = [...new Set(TRAFFIC_DATA.map(d=>d.monthKey))].sort().reverse();
   document.getElementById("trafficMonthFilter").innerHTML = '<option value="">ทุกเดือน</option>' + tMonths.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join("");
@@ -1338,14 +1475,78 @@ let chartVideoProvince, chartVideoHourly, chartVideoTrend;
 document.getElementById("videoUnitFilter").addEventListener("change", renderVideoPage);
 document.getElementById("videoSearch").addEventListener("input", renderVideoPage);
 
+/* ---------- ตัวกรองขั้นสูง (แท็บวิดีโอ) ---------- */
+document.getElementById("btnToggleVideoAdvFilter").addEventListener("click", () => {
+  const panel = document.getElementById("videoAdvFilterPanel");
+  const btn = document.getElementById("btnToggleVideoAdvFilter");
+  const isOpen = panel.style.display !== "none";
+  panel.style.display = isOpen ? "none" : "";
+  btn.classList.toggle("on", !isOpen);
+});
+
+["videoDateFrom","videoDateTo","videoProvinceFilter","videoOfficerFilter"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", () => { updateVideoAdvFilterBadge(); renderVideoPage(); });
+});
+
+document.querySelectorAll("#videoAdvFilterPanel .qr-btn").forEach(btn=>{
+  btn.addEventListener("click", () => {
+    const range = btn.dataset.range;
+    const fromEl = document.getElementById("videoDateFrom");
+    const toEl = document.getElementById("videoDateTo");
+    const today = new Date();
+    const toStr = isoDate(today);
+
+    if (range === "clear") {
+      fromEl.value = ""; toEl.value = "";
+      document.getElementById("videoProvinceFilter").value = "";
+      document.getElementById("videoOfficerFilter").value = "";
+    } else if (range === "today") {
+      fromEl.value = toStr; toEl.value = toStr;
+    } else if (range === "7d") {
+      const from = new Date(today); from.setDate(from.getDate() - 6);
+      fromEl.value = isoDate(from); toEl.value = toStr;
+    } else if (range === "30d") {
+      const from = new Date(today.getFullYear(), today.getMonth(), 1);
+      fromEl.value = isoDate(from); toEl.value = toStr;
+    }
+    updateVideoAdvFilterBadge();
+    renderVideoPage();
+  });
+});
+
+function updateVideoAdvFilterBadge() {
+  const badge = document.getElementById("videoAdvFilterBadge");
+  const ids = ["videoDateFrom","videoDateTo","videoProvinceFilter","videoOfficerFilter"];
+  const activeCount = ids.filter(id => (document.getElementById(id).value || "").trim() !== "").length;
+  if (activeCount > 0) {
+    badge.style.display = "";
+    badge.textContent = String(activeCount);
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+let CURRENT_VIDEO_LIST = [];
+
 function renderVideoPage() {
   const unit = document.getElementById("videoUnitFilter").value;
   const q = document.getElementById("videoSearch").value.trim().toLowerCase();
+  const dateFrom = document.getElementById("videoDateFrom").value;
+  const dateTo = document.getElementById("videoDateTo").value;
+  const province = document.getElementById("videoProvinceFilter").value;
+  const officer = document.getElementById("videoOfficerFilter").value;
+
   const data = VIDEO_DATA.filter(d=>{
     if (unit && d.unit !== unit) return false;
-    if (!q) return true;
-    const hay = (d.plateChar+d.plateNumber+d.plateProvince+d.lineName+d.unit).toLowerCase();
-    return hay.includes(q);
+    if (province && d.plateProvince !== province) return false;
+    if (officer && d.lineName !== officer) return false;
+    if (dateFrom && d.dateKey < dateFrom) return false;
+    if (dateTo && d.dateKey > dateTo) return false;
+    if (q) {
+      const hay = (d.plateChar+d.plateNumber+d.plateProvince+d.lineName+d.unit).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
   });
 
   const todayKey = isoDate(new Date());
@@ -1422,14 +1623,126 @@ function renderVideoPage() {
   }).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 
   const sorted = data.slice().sort((a,b)=> b.dateKey.localeCompare(a.dateKey)).slice(0,60);
-  document.getElementById("videoList").innerHTML = sorted.length ? sorted.map(d=>`
-    <div class="card ev-card">
+  CURRENT_VIDEO_LIST = sorted;
+  document.getElementById("videoList").innerHTML = sorted.length ? sorted.map((d,idx)=>`
+    <div class="card ev-card" onclick="openVideoModal(${idx})">
       <div class="ev-top"><span class="ev-plate">${esc(d.plateChar)} ${esc(d.plateNumber)}</span><span class="ev-time">${esc(d.timestamp)}</span></div>
       <div class="ev-meta">📍 ${esc(d.plateProvince)} · 🏢 ${esc(d.unit)}</div>
       <div class="ev-meta">👤 ${esc(d.lineName)} · 🎥 ${d.videoCount} วิดีโอ · 🧾 ${d.ticketCount} ใบสั่ง · 📸 ${d.driverCount} รูปผู้ขับ</div>
-      <a class="ev-link" href="${esc(d.folderUrl)}" target="_blank">เปิดโฟลเดอร์หลักฐานบน Drive ↗</a>
+      <div class="ev-link">▶ แตะเพื่อพรีวิวหลักฐาน</div>
     </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 }
+
+/* ============================================================
+   EMBEDDED EVIDENCE PREVIEWER (วิดีโอหลายไฟล์ + รูปภาพ)
+   ============================================================ */
+let CURRENT_MODAL_VIDEOS = [];
+
+function driveEmbedUrl(it) {
+  if (!it) return "";
+  if (it.fileId) return `https://drive.google.com/file/d/${it.fileId}/preview`;
+  if (it.fileUrl && it.fileUrl.includes("/d/")) {
+    const id = it.fileUrl.split("/d/")[1]?.split("/")[0];
+    if (id) return `https://drive.google.com/file/d/${id}/preview`;
+  }
+  return "";
+}
+
+function openVideoModal(idx) {
+  const it = CURRENT_VIDEO_LIST[idx];
+  if (!it) return;
+  CURRENT_MODAL_VIDEOS = it.videos || [];
+
+  document.getElementById("videoModalTitle").textContent = `${it.plateChar} ${it.plateNumber} ${it.plateProvince}`;
+  document.getElementById("videoModalSub").textContent = `👤 ${it.lineName || "-"} | 🏢 ${it.unit || "-"} | 🎥 ${CURRENT_MODAL_VIDEOS.length} วิดีโอ`;
+
+  renderVideoTabs();
+  loadModalVideo(0);
+  renderPhotoThumbs("ticketCopyThumbs", it.ticketCopies || []);
+  renderPhotoThumbs("driverPhotoThumbs", it.driverPhotos || []);
+
+  document.getElementById("videoModalOpenLink").href = it.folderUrl || "#";
+  document.getElementById("videoModalOverlay").classList.add("open");
+}
+
+function renderVideoTabs() {
+  const row = document.getElementById("videoTabsRow");
+  if (!row) return;
+  if (CURRENT_MODAL_VIDEOS.length <= 1) { row.innerHTML = ""; return; }
+  row.innerHTML = CURRENT_MODAL_VIDEOS.map((v, idx) =>
+    `<button class="video-tab-btn ${idx===0?'on':''}" data-idx="${idx}">วิดีโอ ${idx+1}</button>`
+  ).join("");
+  row.querySelectorAll(".video-tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const idx = parseInt(btn.dataset.idx, 10);
+      loadModalVideo(idx);
+      row.querySelectorAll(".video-tab-btn").forEach(b => b.classList.toggle("on", b===btn));
+    });
+  });
+}
+
+function loadModalVideo(idx) {
+  const v = CURRENT_MODAL_VIDEOS[idx];
+  const loadingOverlay = document.getElementById("videoLoadingOverlay");
+  const frame = document.getElementById("videoModalFrame");
+  if (!v) {
+    if (loadingOverlay) loadingOverlay.classList.add("hidden-loading");
+    frame.src = "about:blank";
+    return;
+  }
+  if (loadingOverlay) loadingOverlay.classList.remove("hidden-loading");
+  frame.onload = () => { if (loadingOverlay) loadingOverlay.classList.add("hidden-loading"); };
+  frame.src = driveEmbedUrl(v);
+}
+
+function renderPhotoThumbs(containerId, photos) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!photos.length) { el.innerHTML = '<div class="no-data" style="padding:10px 0;">ไม่มีรูป</div>'; return; }
+  el.innerHTML = photos.map(p => `
+    <a href="${p.fileUrl || '#'}" target="_blank" class="photo-thumb">
+      <img src="https://drive.google.com/thumbnail?id=${p.fileId}&sz=w200" loading="lazy" />
+    </a>
+  `).join("");
+}
+
+function closeVideoModal() {
+  exitFullscreenIfActive();
+  document.getElementById("videoModalOverlay").classList.remove("open");
+  document.getElementById("videoModalFrame").src = "";
+  const loadingOverlay = document.getElementById("videoLoadingOverlay");
+  if (loadingOverlay) loadingOverlay.classList.remove("hidden-loading");
+}
+document.getElementById("btnCloseVideoModal").addEventListener("click", closeVideoModal);
+document.getElementById("videoModalOverlay").addEventListener("click", e=>{ if(e.target.id==="videoModalOverlay") closeVideoModal(); });
+
+function exitFullscreenIfActive() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen?.();
+    else if (document.webkitFullscreenElement) document.webkitExitFullscreen?.();
+  } catch (err) { /* บางเบราว์เซอร์ไม่รองรับ ข้ามได้ */ }
+}
+
+function toggleFullscreenVideo() {
+  const wrap = document.getElementById("videoFrameWrap");
+  if (!wrap) return;
+  const isCurrentlyFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  try {
+    if (isCurrentlyFullscreen) { exitFullscreenIfActive(); return; }
+    if (wrap.requestFullscreen) wrap.requestFullscreen();
+    else if (wrap.webkitRequestFullscreen) wrap.webkitRequestFullscreen();
+  } catch (err) { /* ไม่รองรับเต็มจอ - ใช้ลิงก์เปิดโฟลเดอร์แทนได้ */ }
+}
+document.getElementById("btnFullscreenVideo").addEventListener("click", toggleFullscreenVideo);
+["fullscreenchange","webkitfullscreenchange"].forEach(evt=>{
+  document.addEventListener(evt, ()=>{
+    const btn = document.getElementById("btnFullscreenVideo");
+    if (!btn) return;
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    btn.innerText = isFs ? "⤢" : "⛶";
+    btn.title = isFs ? "ออกจากเต็มจอ" : "ดูแบบเต็มจอ";
+  });
+});
 
 boot();
 </script>
