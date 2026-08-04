@@ -296,7 +296,39 @@
   #monthlyMonthTabs{width:100%;}
 }
 }
-   
+
+  /* ---------- Sub-tab bar (redesigned) ---------- */
+  .subtab-bar{
+    display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;
+    padding:4px 2px 16px;margin-bottom:18px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  .subtab-bar::-webkit-scrollbar{display:none;}
+  .subtab-btn{
+    flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;
+    min-width:88px;padding:12px 14px 11px;border:1px solid var(--card-border);border-radius:18px;
+    cursor:pointer;background:var(--glass-strong);
+    backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+    box-shadow:var(--sh-1);color:var(--ink-soft);font-family:inherit;
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease,color .18s ease,border-color .18s ease;
+  }
+  .subtab-btn:hover{transform:translateY(-2px);box-shadow:var(--sh-2);}
+  .subtab-btn .subtab-ic{
+    width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    font-size:1.15rem;background:rgba(48,209,88,.12);transition:background .18s ease;
+  }
+  .subtab-btn .subtab-lbl{font-size:.72rem;font-weight:700;white-space:nowrap;letter-spacing:-.01em;}
+  .subtab-btn.on{
+    background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;
+    border-color:transparent;box-shadow:0 10px 22px -10px rgba(31,139,61,.6);
+  }
+  .subtab-btn.on .subtab-ic{background:rgba(255,255,255,.22);}
+  @media(max-width:640px){
+    .subtab-btn{min-width:78px;padding:10px 12px 9px;}
+    .subtab-btn .subtab-ic{width:34px;height:34px;font-size:1.05rem;}
+    .subtab-btn .subtab-lbl{font-size:.67rem;}
+  }
+
 </style>
 </head>
 <body>
@@ -473,13 +505,13 @@
         </div>
       </div>
 
-      <div class="seg" id="monthlySubSeg" style="margin-bottom:18px;">
-        <button class="on" data-sub="overview">📊 ภาพรวม</button>
-        <button data-sub="top">🏆 TOP ผู้ปฏิบัติ</button>
-        <button data-sub="unit">🏢 หน่วยงาน</button>
-        <button data-sub="category">📋 หมวดหมู่</button>
-        <button data-sub="traffic">🚦 จราจร+อำนวยฯ</button>
-        <button data-sub="compare">📅 เปรียบเทียบรายเดือน</button>
+      <div class="subtab-bar" id="monthlySubSeg">
+        <button class="subtab-btn on" data-sub="overview"><span class="subtab-ic">📊</span><span class="subtab-lbl">ภาพรวม</span></button>
+        <button class="subtab-btn" data-sub="top"><span class="subtab-ic">🏆</span><span class="subtab-lbl">TOP ผู้ปฏิบัติ</span></button>
+        <button class="subtab-btn" data-sub="unit"><span class="subtab-ic">🏢</span><span class="subtab-lbl">หน่วยงาน</span></button>
+        <button class="subtab-btn" data-sub="category"><span class="subtab-ic">📋</span><span class="subtab-lbl">หมวดหมู่</span></button>
+        <button class="subtab-btn" data-sub="traffic"><span class="subtab-ic">🚦</span><span class="subtab-lbl">จราจร+อำนวยฯ</span></button>
+        <button class="subtab-btn" data-sub="compare"><span class="subtab-ic">📅</span><span class="subtab-lbl">เปรียบเทียบ</span></button>
       </div>
 
       <div id="monthlySubOverview">
@@ -529,11 +561,6 @@
             <button data-view="unit">🏢 รายหน่วย</button>
             <button data-view="radio">🚗 รายรถวิทยุ</button>
           </div>
-          <select id="monthlyTrafficSourceFilter">
-            <option value="">ทุกประเภท</option>
-            <option value="จราจร">🚦 จับจราจร</option>
-            <option value="อำนวยความสะดวก">🤝 อำนวยความสะดวก+ขบวน</option>
-          </select>
         </div>
 
         <div class="kpi-grid" id="monthlyTrafficKpiRow"></div>
@@ -1227,7 +1254,7 @@ function renderTrafficRadioView(data) {
     </div>`).join("") : `<div class="no-data">ไม่พบข้อมูล</div>`;
 }
 
-let monthlySelYear = null, monthlySelMonth = null, monthlySelType = "", monthlySub = "overview";
+let monthlySelYear = null, monthlySelMonth = null, monthlySelType = "", monthlySelTrafficSource = "", monthlySub = "overview";
 let monthlyExcludedOfficers = new Set([
   "พ.ต.ต.เสฐวุฒิ ลี้เกษร",
   "ร.ต.อ.นิพันธ์ อำพันดี",
@@ -1260,19 +1287,40 @@ function buildMonthlyMonthTabs() {
     })
   );
 }
+
+/* ---------- ปุ่มตัวกรองบนสุด: สลับความหมายอัตโนมัติเมื่ออยู่แท็บ "จราจร+อำนวยฯ" ---------- */
+function renderMonthlyTypeSeg() {
+  const seg = document.getElementById("monthlyTypeSeg");
+  if (monthlySub === "traffic") {
+    seg.innerHTML = `
+      <button class="${monthlySelTrafficSource===""?'on':''}" data-type="">📋 ทั้งหมด</button>
+      <button class="${monthlySelTrafficSource==="จราจร"?'on':''}" data-type="จราจร">🚦 จราจร</button>
+      <button class="${monthlySelTrafficSource==="อำนวยความสะดวก"?'on':''}" data-type="อำนวยความสะดวก">🤝 อำนวยความสะดวก</button>
+    `;
+  } else {
+    seg.innerHTML = `
+      <button class="${monthlySelType===""?'on':''}" data-type="">📋 ทั้งหมด</button>
+      <button class="${monthlySelType==="จับเอง"?'on':''}" data-type="จับเอง">✅ จับเอง</button>
+      <button class="${monthlySelType==="จับร่วม"?'on':''}" data-type="จับร่วม">🤝 จับร่วม</button>
+    `;
+  }
+}
 document.getElementById("monthlyTypeSeg").addEventListener("click", e=>{
   const btn = e.target.closest("button"); if(!btn) return;
-  monthlySelType = btn.dataset.type;
-  document.querySelectorAll("#monthlyTypeSeg button").forEach(b=>b.classList.toggle("on", b===btn));
+  if (monthlySub === "traffic") monthlySelTrafficSource = btn.dataset.type;
+  else monthlySelType = btn.dataset.type;
+  renderMonthlyTypeSeg();
   renderMonthlySummary();
 });
+
 document.getElementById("monthlySubSeg").addEventListener("click", e=>{
-  const btn = e.target.closest("button"); if(!btn) return;
+  const btn = e.target.closest(".subtab-btn"); if(!btn) return;
   monthlySub = btn.dataset.sub;
-  document.querySelectorAll("#monthlySubSeg button").forEach(b=>b.classList.toggle("on", b===btn));
+  document.querySelectorAll("#monthlySubSeg .subtab-btn").forEach(b=>b.classList.toggle("on", b===btn));
   ["overview","top","unit","category","traffic","compare"].forEach(s=>
     document.getElementById("monthlySub"+s[0].toUpperCase()+s.slice(1)).style.display = (s===monthlySub) ? "" : "none"
   );
+  renderMonthlyTypeSeg();
   renderMonthlySummary();
 });
 
@@ -1312,11 +1360,9 @@ document.getElementById("monthlyTrafficViewSeg").addEventListener("click", e=>{
   document.getElementById("monthlyTrafficViewRadio").style.display = monthlyTrafficView==="radio" ? "" : "none";
   renderMonthlyTrafficSection();
 });
-document.getElementById("monthlyTrafficSourceFilter").addEventListener("change", renderMonthlyTrafficSection);
 
 function getMonthlyTrafficFiltered() {
-  const source = document.getElementById("monthlyTrafficSourceFilter").value;
-  return getMonthlyTrafficAll().filter(d => !source || d.source===source);
+  return getMonthlyTrafficAll().filter(d => !monthlySelTrafficSource || d.source===monthlySelTrafficSource);
 }
 
 function renderMonthlyTrafficSection() {
