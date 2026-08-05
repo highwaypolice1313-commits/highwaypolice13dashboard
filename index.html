@@ -2185,29 +2185,45 @@ async function renderReceiptToCanvas(data, canvasId) {
   const FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 
   const formatReceiptDateTime = (raw) => {
-    if (!raw) return { dateStr: "-", timeStr: "-" };
-    const str = String(raw).trim();
+  if (!raw) return { dateStr: "-", timeStr: "-" };
+  const str = String(raw).trim();
 
-    const isoMatch = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.exec(str);
-    if (isoMatch) {
-      const d = new Date(str);
-      if (!isNaN(d.getTime())) {
-        const thai = new Date(d.getTime() + 7 * 60 * 60 * 1000);
-        const dd = String(thai.getUTCDate()).padStart(2, "0");
-        const mm = String(thai.getUTCMonth() + 1).padStart(2, "0");
-        const yyyy = thai.getUTCFullYear() + 543;
-        const HH = String(thai.getUTCHours()).padStart(2, "0");
-        const MM = String(thai.getUTCMinutes()).padStart(2, "0");
-        return { dateStr: `${dd}/${mm}/${yyyy}`, timeStr: `${HH}:${MM} น.` };
-      }
-    }
+  // รองรับค่าดิบจาก Google Sheets gviz: Date(yyyy,m,d,h,mi,s) — m เริ่มที่ 0
+  const gvizMatch = /^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/.exec(str);
+  if (gvizMatch) {
+    const y  = +gvizMatch[1];
+    const m  = +gvizMatch[2];
+    const d  = +gvizMatch[3];
+    const h  = gvizMatch[4] !== undefined ? +gvizMatch[4] : 0;
+    const mi = gvizMatch[5] !== undefined ? +gvizMatch[5] : 0;
+    const dd = String(d).padStart(2, "0");
+    const mm = String(m + 1).padStart(2, "0");
+    const yyyy = y + 543;
+    const HH = String(h).padStart(2, "0");
+    const MM = String(mi).padStart(2, "0");
+    return { dateStr: `${dd}/${mm}/${yyyy}`, timeStr: `${HH}:${MM} น.` };
+  }
 
-    const parts = str.split(/\s+/);
-    if (parts.length >= 2) {
-      return { dateStr: parts[0], timeStr: parts.slice(1).join(" ") };
+  const isoMatch = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.exec(str);
+  if (isoMatch) {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      const thai = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+      const dd = String(thai.getUTCDate()).padStart(2, "0");
+      const mm = String(thai.getUTCMonth() + 1).padStart(2, "0");
+      const yyyy = thai.getUTCFullYear() + 543;
+      const HH = String(thai.getUTCHours()).padStart(2, "0");
+      const MM = String(thai.getUTCMinutes()).padStart(2, "0");
+      return { dateStr: `${dd}/${mm}/${yyyy}`, timeStr: `${HH}:${MM} น.` };
     }
-    return { dateStr: str, timeStr: "-" };
-  };
+  }
+
+  const parts = str.split(/\s+/);
+  if (parts.length >= 2) {
+    return { dateStr: parts[0], timeStr: parts.slice(1).join(" ") };
+  }
+  return { dateStr: str, timeStr: "-" };
+};
 
   const measureCanvas = document.createElement("canvas");
   const mctx = measureCanvas.getContext("2d");
