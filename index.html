@@ -262,6 +262,24 @@
   .video-modal-foot{padding:14px 18px;border-top:1px solid var(--sep);display:flex;justify-content:flex-end;flex-shrink:0;}
   .video-modal-foot a{font-size:.78rem;font-weight:700;color:var(--blue);text-decoration:none;}
 
+  /* ---------- Receipt View Modal (ดูใบเสร็จ/เอกสารยืนยันย้อนหลัง) ---------- */
+  #receiptViewOverlay{position:fixed;inset:0;z-index:700;background:rgba(20,20,22,.55);backdrop-filter:blur(10px) saturate(140%);-webkit-backdrop-filter:blur(10px) saturate(140%);
+    display:none;align-items:center;justify-content:center;padding:20px;}
+  #receiptViewOverlay.open{display:flex;}
+  .receipt-view-box{background:var(--glass-strong);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+    border-radius:24px;max-width:400px;width:100%;padding:20px;box-shadow:var(--sh-2);border:1px solid rgba(255,255,255,.6);
+    max-height:90vh;overflow-y:auto;}
+  .receipt-view-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .receipt-view-head .nm{font-weight:800;font-size:.92rem;color:var(--green-ink);}
+  .receipt-view-close{background:rgba(118,118,128,.12);border:none;color:var(--ink-faint);width:30px;height:30px;border-radius:9px;font-size:1rem;cursor:pointer;}
+  .receipt-view-loading{padding:40px 0;text-align:center;color:var(--ink-faint);}
+  .receipt-view-loading .lbl{font-size:.76rem;margin-top:8px;}
+  #receiptViewImg{width:100%;border-radius:16px;box-shadow:var(--sh-2);display:block;}
+  .btn-primary{background:linear-gradient(160deg,var(--green),var(--green-deep));color:#fff;border-radius:16px;padding:13px;
+    font-weight:700;font-size:.86rem;width:100%;border:none;cursor:pointer;box-shadow:0 10px 22px -8px rgba(31,139,61,.55);
+    transition:transform .15s ease,filter .15s ease;}
+  .btn-primary:active{transform:scale(.97);filter:brightness(.96);}
+
   @media(max-width:1024px){
     .sidebar{display:none;}
     .mobile-topbar{display:block;}
@@ -725,6 +743,7 @@
         <div class="sub" id="videoModalSub">-</div>
       </div>
       <div class="video-modal-head-actions">
+        <button id="btnViewReceipt" title="ดูใบเสร็จ/เอกสารยืนยัน">🧾</button>
         <button id="btnFullscreenVideo" title="ดูแบบเต็มจอ">⛶</button>
         <button id="btnCloseVideoModal">✕</button>
       </div>
@@ -748,6 +767,23 @@
     <div class="video-modal-foot">
       <a id="videoModalOpenLink" href="#" target="_blank">เปิดโฟลเดอร์หลักฐานทั้งหมดบน Drive ↗</a>
     </div>
+  </div>
+</div>
+
+<!-- Receipt View Modal (ดูใบเสร็จ/เอกสารยืนยันย้อนหลัง) -->
+<canvas id="receiptViewCanvas" class="hidden" style="display:none;"></canvas>
+<div id="receiptViewOverlay">
+  <div class="receipt-view-box">
+    <div class="receipt-view-head">
+      <div class="nm">🧾 เอกสารยืนยันการรายงาน</div>
+      <button class="receipt-view-close" id="btnCloseReceiptView">✕</button>
+    </div>
+    <div class="receipt-view-loading" id="receiptViewLoading">
+      <span class="spinner-lg"></span>
+      <div class="lbl">กำลังสร้างเอกสาร...</div>
+    </div>
+    <img id="receiptViewImg" style="display:none;" />
+    <button id="btnDownloadReceiptView" class="btn-primary" style="margin-top:14px;display:none;">📥 ดาวน์โหลดรูปภาพ</button>
   </div>
 </div>
 
@@ -1924,6 +1960,7 @@ function renderVideoPage() {
    EMBEDDED EVIDENCE PREVIEWER (วิดีโอหลายไฟล์ + รูปภาพ)
    ============================================================ */
 let CURRENT_MODAL_VIDEOS = [];
+let CURRENT_MODAL_ITEM = null; // เก็บ record ปัจจุบันที่เปิดพรีวิวอยู่ ไว้ใช้สร้างใบเสร็จย้อนหลัง
 
 function driveEmbedUrl(it) {
   if (!it) return "";
@@ -1938,6 +1975,7 @@ function driveEmbedUrl(it) {
 function openVideoModal(idx) {
   const it = CURRENT_VIDEO_LIST[idx];
   if (!it) return;
+  CURRENT_MODAL_ITEM = it;
   CURRENT_MODAL_VIDEOS = it.videos || [];
 
   document.getElementById("videoModalTitle").textContent = `${it.plateChar} ${it.plateNumber} ${it.plateProvince}`;
@@ -2029,6 +2067,450 @@ document.getElementById("btnFullscreenVideo").addEventListener("click", toggleFu
     btn.innerText = isFs ? "⤢" : "⛶";
     btn.title = isFs ? "ออกจากเต็มจอ" : "ดูแบบเต็มจอ";
   });
+});
+
+/* ============================================================
+   RECEIPT RENDERER (คัดลอกมาจากระบบส่งหลักฐาน "รถวิ่งขวา")
+   สร้างเอกสารยืนยันจากข้อมูล record เดียวกับที่ใช้ตอนอัปโหลด
+   ใช้ font ของระบบ (system font) จึงไม่ต้องพรีโหลดฟอนต์ Prompt ก่อนวาด
+   ============================================================ */
+function stableDocSeq(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash * 31 + str.charCodeAt(i)) >>> 0;
+  }
+  return 100000 + (hash % 900000);
+}
+
+/* ---------- ตัดข้อความยาวให้ขึ้นบรรทัดใหม่ (รองรับไทยที่ไม่มีช่องว่างระหว่างคำ) ---------- */
+function wrapTextToLines(ctx, text, maxWidth) {
+  text = String(text ?? "-").trim();
+  if (!text) return ["-"];
+  if (ctx.measureText(text).width <= maxWidth) return [text];
+
+  const words = text.split(/(\s+)/).filter(w => w !== "");
+  const roughLines = [];
+  let current = "";
+  const pushCurrent = () => { if (current.trim() !== "") roughLines.push(current.trim()); current = ""; };
+  for (const w of words) {
+    const test = current + w;
+    if (ctx.measureText(test).width > maxWidth && current.trim() !== "") {
+      pushCurrent();
+      current = w;
+    } else {
+      current = test;
+    }
+  }
+  pushCurrent();
+  if (!roughLines.length) roughLines.push(text);
+
+  const finalLines = [];
+  for (const line of roughLines) {
+    if (ctx.measureText(line).width <= maxWidth) { finalLines.push(line); continue; }
+    let chunk = "";
+    for (const ch of line) {
+      const test = chunk + ch;
+      if (ctx.measureText(test).width > maxWidth && chunk !== "") {
+        finalLines.push(chunk);
+        chunk = ch;
+      } else {
+        chunk = test;
+      }
+    }
+    if (chunk) finalLines.push(chunk);
+  }
+  return finalLines.length ? finalLines : [text];
+}
+
+function fitTextBlock(ctx, text, maxWidth, weight, baseSize, minSize, maxLines) {
+  let size = baseSize;
+  let lines = [];
+  let fitted = false;
+
+  for (size = baseSize; size >= minSize; size--) {
+    ctx.font = `${weight} ${size}px 'Prompt', sans-serif`;
+    lines = wrapTextToLines(ctx, text, maxWidth);
+    if (lines.length <= maxLines) { fitted = true; break; }
+  }
+
+  if (!fitted) {
+    size = minSize;
+    ctx.font = `${weight} ${size}px 'Prompt', sans-serif`;
+    lines = wrapTextToLines(ctx, text, maxWidth);
+    if (lines.length > maxLines) {
+      lines = lines.slice(0, maxLines);
+      let last = lines[maxLines - 1];
+      while (last.length > 1 && ctx.measureText(last + "…").width > maxWidth) {
+        last = last.slice(0, -1);
+      }
+      lines[maxLines - 1] = last + "…";
+    }
+  }
+
+  return { lines, size };
+}
+
+const RECEIPT_LINE_GAP = 1.35;
+
+async function renderReceiptToCanvas(data, canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) throw new Error("ไม่พบ canvas: " + canvasId);
+
+  const dpr = Math.min(Math.round(window.devicePixelRatio || 1),2);
+  const W = 640;
+  const CARD_X = 30;
+  const CARD_W = W - CARD_X * 2;
+  const PAD_X = 30;
+  const CONTENT_X = CARD_X + PAD_X;
+  const CONTENT_RIGHT = W - CARD_X - PAD_X;
+  const CONTENT_WIDTH = CONTENT_RIGHT - CONTENT_X;
+  const CARD_TOP = 30;
+  const CARD_PAD_TOP = 26;
+  const CARD_PAD_BOTTOM = 34;
+
+  const COLOR = {
+    pageBg:    "#EEF1F6",
+    cardBg:    "#FFFFFF",
+    navy:      "#14141F",
+    mint:      "#34D399",
+    mintDark:  "#16A34A",
+    titleText: "#14141F",
+    subText:   "#8E8E93",
+    labelText: "#9AA0A6",
+    valueText: "#1C1C1E",
+    softBg:    "#F5F6F8",
+    divider:   "#E5E5EA",
+  };
+
+  const FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+  const formatReceiptDateTime = (raw) => {
+    if (!raw) return { dateStr: "-", timeStr: "-" };
+    const str = String(raw).trim();
+
+    const isoMatch = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.exec(str);
+    if (isoMatch) {
+      const d = new Date(str);
+      if (!isNaN(d.getTime())) {
+        const thai = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+        const dd = String(thai.getUTCDate()).padStart(2, "0");
+        const mm = String(thai.getUTCMonth() + 1).padStart(2, "0");
+        const yyyy = thai.getUTCFullYear() + 543;
+        const HH = String(thai.getUTCHours()).padStart(2, "0");
+        const MM = String(thai.getUTCMinutes()).padStart(2, "0");
+        return { dateStr: `${dd}/${mm}/${yyyy}`, timeStr: `${HH}:${MM} น.` };
+      }
+    }
+
+    const parts = str.split(/\s+/);
+    if (parts.length >= 2) {
+      return { dateStr: parts[0], timeStr: parts.slice(1).join(" ") };
+    }
+    return { dateStr: str, timeStr: "-" };
+  };
+
+  const measureCanvas = document.createElement("canvas");
+  const mctx = measureCanvas.getContext("2d");
+
+  const docKey = `${data.plateChar || ""}-${data.plateNumber || ""}-${data.plateProvince || ""}-${data.timestamp || ""}`;
+  const dateForDoc = data.dateThai || (data.timestamp ? String(data.timestamp).slice(0, 10).replace(/-/g, "") : "");
+  const docNo = "HWPD-" + dateForDoc + "-" + stableDocSeq(docKey);
+
+  const { dateStr, timeStr } = formatReceiptDateTime(data.timestamp);
+
+  const titleFit    = fitTextBlock(mctx, "เอกสารยืนยันหลักฐานจราจร", CONTENT_WIDTH - 40, "bold", 20, 15, 2);
+  const subtitleFit = fitTextBlock(mctx, "กองบังคับการตำรวจทางหลวง", CONTENT_WIDTH - 40, "bold", 12, 10, 1);
+  const docNoFit    = fitTextBlock(mctx, "เลขที่เอกสาร: " + docNo, CONTENT_WIDTH - 40, "400", 12, 10, 1);
+
+  const PLATE_TEXT_MAX_WIDTH = CONTENT_WIDTH - 40;
+  const pChar = String(data.plateChar || "").trim();
+  const pNum = String(data.plateNumber || "").trim();
+  const plateLabelFit    = fitTextBlock(mctx, "หมายเลขทะเบียนรถ", PLATE_TEXT_MAX_WIDTH, "bold", 12, 10, 1);
+  const plateMainFit     = fitTextBlock(mctx, `${pChar} ${pNum}`.trim(), PLATE_TEXT_MAX_WIDTH, "bold", 34, 20, 1);
+  const plateProvinceFit = fitTextBlock(mctx, data.plateProvince || "-", PLATE_TEXT_MAX_WIDTH, "bold", 14, 11, 1);
+
+  const REPORTER_TEXT_MAX_WIDTH = CONTENT_WIDTH - 40;
+  const reporterLabelFit = fitTextBlock(mctx, "ผู้รายงาน / หน่วยงาน", REPORTER_TEXT_MAX_WIDTH, "bold", 12, 10, 1);
+  const reporterNameFit  = fitTextBlock(mctx, data.lineName || "-", REPORTER_TEXT_MAX_WIDTH, "bold", 16, 12, 1);
+  const reporterUnitFit  = fitTextBlock(mctx, data.unit || "-", REPORTER_TEXT_MAX_WIDTH, "400", 13, 10, 2);
+
+  const COL_GAP = 14;
+  const COL_W = (CONTENT_WIDTH - COL_GAP) / 2;
+  const COL_TEXT_MAX_WIDTH = COL_W - 32;
+  const dateLabelFit = fitTextBlock(mctx, "วันที่รายงาน", COL_TEXT_MAX_WIDTH, "bold", 11, 9, 1);
+  const dateValueFit = fitTextBlock(mctx, dateStr, COL_TEXT_MAX_WIDTH, "bold", 16, 11, 1);
+  const timeLabelFit = fitTextBlock(mctx, "เวลา", COL_TEXT_MAX_WIDTH, "bold", 11, 9, 1);
+  const timeValueFit = fitTextBlock(mctx, timeStr, COL_TEXT_MAX_WIDTH, "bold", 16, 11, 1);
+
+  const sectionLabelFit = fitTextBlock(mctx, "รายการไฟล์หลักฐาน", CONTENT_WIDTH - 40, "bold", 12, 10, 1);
+
+  const vCount = (data.videos || []).length;
+  const tCount = (data.ticketCopies || []).length;
+  const dCount = (data.driverPhotos || []).length;
+  const fileRowsSpec = [
+    ["ไฟล์วิดีโอหลักฐาน", `${vCount} ไฟล์`],
+    ["รูปสำเนาใบสั่ง", `${tCount} รูป`],
+    ["รูปหลักฐานผู้ขับขี่", `${dCount} รูป`],
+  ];
+  const fileRowFits = fileRowsSpec.map(([label, val]) => ({
+    label,
+    valueFit: fitTextBlock(mctx, String(val), (CONTENT_WIDTH - 40) * 0.5, "bold", 15, 11, 1)
+  }));
+
+  const stampFit = fitTextBlock(mctx, "บันทึกข้อมูลเข้าสู่ระบบเรียบร้อยแล้ว", CONTENT_WIDTH - 20, "bold", 12, 10, 2);
+
+  let cy = CARD_TOP + CARD_PAD_TOP;
+
+  const headerCardTop = cy;
+  const headerPad = 26;
+  cy += headerPad;
+
+  const iconBoxD = 56;
+  const iconBoxTop = cy;
+  const iconCenterY = iconBoxTop + iconBoxD / 2;
+  cy += iconBoxD + 16;
+
+  const titleH = titleFit.lines.length * titleFit.size * RECEIPT_LINE_GAP;
+  const titleCenterY = cy + titleH / 2;
+  cy += titleH + 6;
+
+  const subtitleH = subtitleFit.lines.length * subtitleFit.size * RECEIPT_LINE_GAP;
+  const subtitleCenterY = cy + subtitleH / 2;
+  cy += subtitleH + 12;
+
+  const docNoH = docNoFit.lines.length * docNoFit.size * RECEIPT_LINE_GAP;
+  const docNoCenterY = cy + docNoH / 2;
+  cy += docNoH;
+
+  cy += headerPad;
+  const headerCardH = cy - headerCardTop;
+  cy += 18;
+
+  const plateBoxTop = cy;
+  const plateBoxPadTB = 22;
+  const plateLabelH = plateLabelFit.lines.length * plateLabelFit.size * RECEIPT_LINE_GAP;
+  const plateMainH = plateMainFit.lines.length * plateMainFit.size * RECEIPT_LINE_GAP;
+  const plateProvinceH = plateProvinceFit.lines.length * plateProvinceFit.size * RECEIPT_LINE_GAP;
+  const plateGap1 = 10, plateGap2 = 8;
+  const plateBoxH = plateBoxPadTB * 2 + plateLabelH + plateGap1 + plateMainH + plateGap2 + plateProvinceH;
+  const plateLabelCenterY = plateBoxTop + plateBoxPadTB + plateLabelH / 2;
+  const plateMainCenterY = plateLabelCenterY + plateLabelH / 2 + plateGap1 + plateMainH / 2;
+  const plateProvinceCenterY = plateMainCenterY + plateMainH / 2 + plateGap2 + plateProvinceH / 2;
+  cy += plateBoxH + 18;
+
+  const reporterBoxTop = cy;
+  const reporterPad = 20;
+  const reporterLabelH = reporterLabelFit.lines.length * reporterLabelFit.size * RECEIPT_LINE_GAP;
+  const reporterNameH = reporterNameFit.lines.length * reporterNameFit.size * RECEIPT_LINE_GAP;
+  const reporterUnitH = reporterUnitFit.lines.length * reporterUnitFit.size * RECEIPT_LINE_GAP;
+  const rGap1 = 6, rGap2 = 4;
+  const reporterBoxH = reporterPad * 2 + reporterLabelH + rGap1 + reporterNameH + rGap2 + reporterUnitH;
+  const reporterLabelCenterY = reporterBoxTop + reporterPad + reporterLabelH / 2;
+  const reporterNameCenterY = reporterLabelCenterY + reporterLabelH / 2 + rGap1 + reporterNameH / 2;
+  const reporterUnitCenterY = reporterNameCenterY + reporterNameH / 2 + rGap2 + reporterUnitH / 2;
+  cy += reporterBoxH + 14;
+
+  const colBoxTop = cy;
+  const colPad = 16;
+  const dateLabelH = dateLabelFit.lines.length * dateLabelFit.size * RECEIPT_LINE_GAP;
+  const dateValueH = dateValueFit.lines.length * dateValueFit.size * RECEIPT_LINE_GAP;
+  const timeLabelH = timeLabelFit.lines.length * timeLabelFit.size * RECEIPT_LINE_GAP;
+  const timeValueH = timeValueFit.lines.length * timeValueFit.size * RECEIPT_LINE_GAP;
+  const colGapV = 6;
+  const colBoxH = colPad * 2 + Math.max(dateLabelH + colGapV + dateValueH, timeLabelH + colGapV + timeValueH);
+  const dateLabelCenterY = colBoxTop + colPad + dateLabelH / 2;
+  const dateValueCenterY = dateLabelCenterY + dateLabelH / 2 + colGapV + dateValueH / 2;
+  const timeLabelCenterY = colBoxTop + colPad + timeLabelH / 2;
+  const timeValueCenterY = timeLabelCenterY + timeLabelH / 2 + colGapV + timeValueH / 2;
+  cy += colBoxH + 20;
+
+  const fileCardTop = cy;
+  const filePad = 20;
+  cy += filePad;
+
+  const sectionLabelH = sectionLabelFit.lines.length * sectionLabelFit.size * RECEIPT_LINE_GAP;
+  const sectionLabelCenterY = cy + sectionLabelH / 2;
+  cy += sectionLabelH + 12;
+
+  const fileRowLayout = fileRowFits.map(r => {
+    const lineCount = Math.max(1, r.valueFit.lines.length);
+    const rowH = Math.max(30, lineCount * r.valueFit.size * RECEIPT_LINE_GAP + 8);
+    const centerY = cy + rowH / 2;
+    cy += rowH;
+    return { ...r, centerY };
+  });
+
+  cy += filePad;
+  const fileCardH = cy - fileCardTop;
+  cy += 22;
+
+  const dotR = 4;
+  const stampDotCenterY = cy + dotR;
+  cy += dotR * 2 + 10;
+  const stampTextH = stampFit.lines.length * stampFit.size * RECEIPT_LINE_GAP;
+  const stampCenterY = cy + stampTextH / 2;
+  cy += stampTextH;
+
+  cy += CARD_PAD_BOTTOM;
+
+  const cardH = cy - CARD_TOP;
+  const H = CARD_TOP + cardH + 20;
+
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const drawSafeRoundRect = (x, y, w, h, r, fillColor) => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.restore();
+  };
+
+  const drawSafeText = (text, x, y, align, size, weight, color) => {
+    ctx.save();
+    ctx.font = `${weight} ${size}px ${FONT_FAMILY}`;
+    ctx.fillStyle = color;
+    ctx.textBaseline = "middle";
+
+    if (align === "right") {
+      ctx.textAlign = "left";
+      const m = ctx.measureText(text);
+      const inkRight = (typeof m.actualBoundingBoxRight === "number") ? m.actualBoundingBoxRight : m.width;
+      ctx.fillText(text, x - inkRight, y);
+    } else {
+      ctx.textAlign = align;
+      ctx.fillText(text, x, y);
+    }
+
+    ctx.restore();
+  };
+
+  const drawFittedBlock = (fit, x, centerY, align, weight, color) => {
+    const totalH = fit.lines.length * fit.size * RECEIPT_LINE_GAP;
+    let y = centerY - totalH / 2 + (fit.size * RECEIPT_LINE_GAP) / 2;
+    fit.lines.forEach(line => {
+      drawSafeText(line, x, y, align, fit.size, weight, color);
+      y += fit.size * RECEIPT_LINE_GAP;
+    });
+  };
+
+  ctx.fillStyle = COLOR.pageBg;
+  ctx.fillRect(0, 0, W, H);
+  drawSafeRoundRect(CARD_X, CARD_TOP, CARD_W, cardH, 24, COLOR.cardBg);
+
+  drawSafeRoundRect(CONTENT_X, headerCardTop, CONTENT_WIDTH, headerCardH, 18, COLOR.softBg);
+  drawSafeRoundRect(W / 2 - iconBoxD / 2, iconBoxTop, iconBoxD, iconBoxD, 16, COLOR.cardBg);
+  drawSafeText("🚓", W / 2, iconCenterY + 1, "center", 26, "normal", "#000");
+  drawFittedBlock(titleFit, W / 2, titleCenterY, "center", "bold", COLOR.titleText);
+  drawFittedBlock(subtitleFit, W / 2, subtitleCenterY, "center", "bold", COLOR.subText);
+  drawFittedBlock(docNoFit, W / 2, docNoCenterY, "center", "400", COLOR.labelText);
+
+  drawSafeRoundRect(CONTENT_X, plateBoxTop, CONTENT_WIDTH, plateBoxH, 18, COLOR.navy);
+  drawFittedBlock(plateLabelFit, W / 2, plateLabelCenterY, "center", "bold", "rgba(255,255,255,0.55)");
+  drawFittedBlock(plateMainFit, W / 2, plateMainCenterY, "center", "bold", COLOR.mint);
+  drawFittedBlock(plateProvinceFit, W / 2, plateProvinceCenterY, "center", "bold", "rgba(255,255,255,0.8)");
+
+  drawSafeRoundRect(CONTENT_X, reporterBoxTop, CONTENT_WIDTH, reporterBoxH, 16, COLOR.softBg);
+  drawFittedBlock(reporterLabelFit, CONTENT_X + 20, reporterLabelCenterY, "left", "bold", COLOR.labelText);
+  drawFittedBlock(reporterNameFit, CONTENT_X + 20, reporterNameCenterY, "left", "bold", COLOR.valueText);
+  drawFittedBlock(reporterUnitFit, CONTENT_X + 20, reporterUnitCenterY, "left", "400", COLOR.subText);
+
+  const col1X = CONTENT_X;
+  const col2X = CONTENT_X + COL_W + COL_GAP;
+  drawSafeRoundRect(col1X, colBoxTop, COL_W, colBoxH, 14, COLOR.softBg);
+  drawSafeRoundRect(col2X, colBoxTop, COL_W, colBoxH, 14, COLOR.softBg);
+  drawFittedBlock(dateLabelFit, col1X + 16, dateLabelCenterY, "left", "bold", COLOR.labelText);
+  drawFittedBlock(dateValueFit, col1X + 16, dateValueCenterY, "left", "bold", COLOR.valueText);
+  drawFittedBlock(timeLabelFit, col2X + 16, timeLabelCenterY, "left", "bold", COLOR.labelText);
+  drawFittedBlock(timeValueFit, col2X + 16, timeValueCenterY, "left", "bold", COLOR.valueText);
+
+  drawSafeRoundRect(CONTENT_X, fileCardTop, CONTENT_WIDTH, fileCardH, 16, COLOR.softBg);
+  drawFittedBlock(sectionLabelFit, CONTENT_X + 20, sectionLabelCenterY, "left", "bold", COLOR.labelText);
+  fileRowLayout.forEach(r => {
+    drawSafeText(r.label, CONTENT_X + 20, r.centerY, "left", 14, "400", COLOR.subText);
+    drawFittedBlock(r.valueFit, CONTENT_RIGHT - 20, r.centerY, "right", "bold", COLOR.mintDark);
+  });
+
+  ctx.save();
+  ctx.fillStyle = COLOR.mint;
+  ctx.beginPath();
+  ctx.arc(W / 2, stampDotCenterY, dotR, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  drawFittedBlock(stampFit, W / 2, stampCenterY, "center", "bold", COLOR.labelText);
+
+  return canvas.toDataURL("image/png");
+}
+
+async function downloadOrShareImage(dataUrl, fileName) {
+  try {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], fileName, { type: "image/png" });
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: fileName });
+      return;
+    }
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = fileName;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  } catch (err) {
+    alert('ไม่สามารถดาวน์โหลดอัตโนมัติได้ กรุณาแตะค้างที่รูปด้านบนแล้วเลือก "บันทึกรูปภาพ"');
+  }
+}
+
+/* ---------- เปิดหน้าต่างดูใบเสร็จ/เอกสารยืนยันของ record ที่กำลังพรีวิวอยู่ ---------- */
+async function openReceiptView(it) {
+  if (!it) return;
+  const overlay = document.getElementById("receiptViewOverlay");
+  const img = document.getElementById("receiptViewImg");
+  const loading = document.getElementById("receiptViewLoading");
+  const downloadBtn = document.getElementById("btnDownloadReceiptView");
+
+  img.style.display = "none";
+  downloadBtn.style.display = "none";
+  loading.style.display = "";
+  overlay.classList.add("open");
+
+  try {
+    const dataUrl = await renderReceiptToCanvas(it, "receiptViewCanvas");
+    img.src = dataUrl;
+    img.style.display = "block";
+    downloadBtn.style.display = "";
+    downloadBtn.onclick = () => {
+      const fileName = `หลักฐานรายงาน_${it.plateChar || ""}${it.plateNumber || ""}.png`;
+      downloadOrShareImage(dataUrl, fileName);
+    };
+  } catch (err) {
+    overlay.classList.remove("open");
+    alert("สร้างเอกสารไม่สำเร็จ: " + err.message);
+  } finally {
+    loading.style.display = "none";
+  }
+}
+
+document.getElementById("btnViewReceipt")?.addEventListener("click", () => openReceiptView(CURRENT_MODAL_ITEM));
+document.getElementById("btnCloseReceiptView")?.addEventListener("click", () => {
+  document.getElementById("receiptViewOverlay").classList.remove("open");
+});
+document.getElementById("receiptViewOverlay")?.addEventListener("click", (e) => {
+  if (e.target.id === "receiptViewOverlay") e.currentTarget.classList.remove("open");
 });
 
 boot();
